@@ -28,7 +28,7 @@ $(target_pna): $(src_pna) $(inc_seqio) $(target_seqio) Makefile
 
 $(target_fasta): $(src_fasta) $(inc_seqio) $(target_seqio) Makefile
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(src_fasta) $(includes) -o $@ -lseqio -L bld/lib -lz -lrt
+	$(CXX) $(CXXFLAGS) $(src_fasta) $(includes) -o $@ -lseqio -L bld/lib -lz -lrt -lboost_filesystem -lboost_system
 
 install:
 	cp $(target_seqio) /usr/local/lib

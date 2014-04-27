@@ -4,7 +4,9 @@
 
 #include <string.h>
 
+#include <boost/filesystem.hpp>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -23,6 +25,7 @@ void usage(string msg = "") {
     epf("usage: fasta [--translate (none|caps_gatcn)] v[alidate] <fasta...>");
     epf("       fasta [--translate (none|caps_gatcn)] cat <fasta...>");
     epf("       fasta [--translate (none|caps_gatcn)] read <fasta...>");
+    epf("       fasta [--translate (none|caps_gatcn)] split fasta outdir");
 
     if(msg.length() > 0) {
         ep(msg.c_str());
@@ -144,6 +147,36 @@ int main(int argc, const char **argv) {
                 while( 0 != (rc = reader.read(buf, sizeof(buf))) ) {
                 }
             }
+        }
+    } else if(mode == "split") {
+        if( (argc - argi) != 2) {
+            usage();
+        }
+        string path_in = argv[argi++];
+        boost::filesystem::path path_outdir = argv[argi++];
+
+        if(!boost::filesystem::exists(path_outdir)) {
+            errif(!boost::filesystem::create_directories(path_outdir), "Failed creating output directory.");
+        }
+        errif(!boost::filesystem::is_directory(path_outdir), "Output not a directory");
+
+        FastaReader reader(path_in.c_str(), translate);
+        FastaSequenceDesc seq;
+        while(reader.nextSequence(seq)) {
+            boost::filesystem::path path_out = path_outdir / (seq.name + ".fa");
+            ofstream out(path_out.c_str());
+
+            out << ">" << seq.name << " " << seq.comment << endl;
+
+            char buf[61];
+		
+            uint64_t rc;
+            while( 0 != (rc = reader.read(buf, sizeof(buf)-1)) ) {
+                buf[rc] = 0;
+                out << buf << endl;
+            }
+
+            out.close();
         }
     } else {
         usage("Invalid mode: "+mode);
