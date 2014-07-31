@@ -29,18 +29,18 @@
 bool equals(float a, float b, float epsilon);
 
 std::vector<std::string> split(const std::string &str,
-			       const std::string &delims = " \t\n\r");
+                               const std::string &delims = " \t\n\r");
 
 
 template<typename Iterator>
 std::string join(Iterator begin, Iterator end, const std::string &glue = " ") {
     if(begin == end)
-	return "";
+        return "";
     std::string result = *begin;
     ++begin;
     for(; begin != end; ++begin) {
-	result += glue;
-	result += *begin;
+        result += glue;
+        result += *begin;
     }
     return result;
 }
@@ -53,36 +53,36 @@ std::string join(Container cont, const std::string &glue = " ") {
 class Timer {
     class EntryReport {
     public:
-	std::string desc;
-	size_t n; 
-	double min;
-	double max;
-	double median;
-	double mean;
-	double total;
+        std::string desc;
+        size_t n; 
+        double min;
+        double max;
+        double median;
+        double mean;
+        double total;
 
-	void echo();
+        void echo();
     };
 
     class Entry {
     public:
 
-	Entry(const std::string &desc);
-	
-	void start();
-	void end(const std::string &desc);
+        Entry(const std::string &desc);
+        
+        void start();
+        void end(const std::string &desc);
 #ifdef UTIL_CL
-	void add(const cl_event &event);
+        void add(const cl_event &event);
 #endif
 
-	EntryReport report();
+        EntryReport report();
 
     private:
-	void add(double time);
+        void add(double time);
 
-	double _start = 0.0;
-	std::string _desc;
-	std::vector<double> _times;
+        double _start = 0.0;
+        std::string _desc;
+        std::vector<double> _times;
     };
 public:
     ~Timer();

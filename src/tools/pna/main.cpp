@@ -55,13 +55,13 @@ int main(int argc, const char **argv) {
         }
 
         map<string, shared_ptr<PnaWriter> > fwriters;
-	
+        
         string output_dir = argv[argi++];
         for(; argi < argc; argi++) {
             string path_fasta = argv[argi];
 
             cout << "Processing " << path_fasta << "..." << endl;
-	    
+            
             FastaReader reader(path_fasta.c_str(),
                                FastaReader::Translate_Caps_GATCN);
             FastaSequenceDesc seq;
@@ -208,7 +208,7 @@ int main(int argc, const char **argv) {
 
                 shared_ptr<PnaSequenceReader> pnaSeq =
                     pnaReader.openSequence(i);
-		
+                
                 if(!seek) {
                     if(buflen == 0)
                         buflen = 4*1024;
@@ -318,7 +318,7 @@ int main(int argc, const char **argv) {
                 for(uint64_t i  = 0; i < reader.getSequenceCount(); i++) {
                     shared_ptr<PnaSequenceReader> seq = reader.openSequence(i);
                     char buf[16 * 1024];
-		
+                
                     uint64_t rc;
                     while( 0 != (rc = seq->read(buf, sizeof(buf))) ) {
                         errif(1 != fwrite(buf, rc, 1, stdout),
@@ -368,9 +368,9 @@ int main(int argc, const char **argv) {
                 printf(">%s %s\n",
                        seq->getMetadata().value("fasta.name"),
                        seq->getMetadata().value("fasta.comment"));
-		       
+                       
                 char buf[81];
-		
+                
                 uint64_t rc;
                 while( 0 != (rc = seq->read(buf, sizeof(buf) - 1)) ) {
                     buf[rc] = 0;
@@ -399,7 +399,7 @@ int main(int argc, const char **argv) {
                 for(uint64_t i  = 0; i < reader.getSequenceCount(); i++) {
                     shared_ptr<PnaSequenceReader> seq = reader.openSequence(i);
                     char *buf = new char[seq->size()];
-		
+                
                     seq->read(buf, seq->size());
 
                     delete [] buf;

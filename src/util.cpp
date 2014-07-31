@@ -22,10 +22,10 @@ vector<string> split(const string &str, const string &delims) {
     strcpy(buf, str.c_str());
 
     for(char *tok = strtok_r(buf, delims.c_str(), &save);
-	tok != nullptr;
-	tok = strtok_r(nullptr, delims.c_str(), &save))
+        tok != nullptr;
+        tok = strtok_r(nullptr, delims.c_str(), &save))
     {
-	result.push_back(tok);
+        result.push_back(tok);
     }
 
     return result;
@@ -34,15 +34,15 @@ vector<string> split(const string &str, const string &delims) {
 void Timer::EntryReport::echo() {
     cout << desc;
     if(n == 1) {
-	cout << ": t=" << total << endl;
+        cout << ": t=" << total << endl;
     } else {
-	cout << ": n=" << n;
-	cout << ", min=" << min;
-	cout << ", median=" << median;
-	cout << ", mean=" << mean;
-	cout << ", max=" << max;
-	cout << ", total=" << total;
-	cout << endl;
+        cout << ": n=" << n;
+        cout << ", min=" << min;
+        cout << ", median=" << median;
+        cout << ", mean=" << mean;
+        cout << ", max=" << max;
+        cout << ", total=" << total;
+        cout << endl;
     }
 }
 
@@ -68,10 +68,10 @@ void Timer::Entry::end(const std::string &desc) {
 void Timer::Entry::add(const cl_event &event) {
     cl_ulong time_start, time_end, time;
     clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START,
-			    sizeof(time_start), &time_start, NULL);
+                            sizeof(time_start), &time_start, NULL);
 
     clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END,
-			    sizeof(time_end), &time_end, NULL);
+                            sizeof(time_end), &time_end, NULL);
     // duration in nanoseconds
     time = time_end - time_start;
 
@@ -94,7 +94,7 @@ Timer::EntryReport Timer::Entry::report() {
 
     r.total = 0.0;
     for(auto t: _times) {
-	r.total += t;
+        r.total += t;
     }
     r.mean = r.total / r.n;
 
@@ -107,7 +107,7 @@ void Timer::Entry::add(double time) {
 
 Timer::~Timer() {
     for(auto entry: _entries) {
-	delete entry.second;
+        delete entry.second;
     }
 }
 
@@ -137,25 +137,25 @@ void Timer::report() {
     vector<EntryReport> reports;
 
     for(auto entry: _entries) {
-	reports.push_back( entry.second->report() );
+        reports.push_back( entry.second->report() );
     }
 
     sort( reports.begin(),
-	  reports.end(),
-	  [](const Timer::EntryReport &a, const Timer::EntryReport &b) {
-	      return a.min < b.min;
-	  });
+          reports.end(),
+          [](const Timer::EntryReport &a, const Timer::EntryReport &b) {
+              return a.min < b.min;
+          });
 
     for(auto r: reports) {
-	r.echo();
+        r.echo();
     }
 }
 
 Timer::Entry *Timer::findEntry(const std::string &desc) {
     Entry *entry = _entries[desc];
     if(entry == nullptr) {
-	entry = new Entry(desc);
-	_entries[desc] = entry;
+        entry = new Entry(desc);
+        _entries[desc] = entry;
     }
     return entry;
 }
@@ -172,7 +172,7 @@ double Timer::getTime_msec() {
 string pathcat(const string &a, const string &b) {
     string result = a;
     if(a[a.length() - 1] != '/')
-	result += "/";
+        result += "/";
     result += b;
     return result;
 }

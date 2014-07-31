@@ -126,7 +126,7 @@ int main(int argc, const char **argv) {
             FastaSequenceDesc seq;
             while(reader.nextSequence(seq)) {
                 char buf[16 * 1024];
-		
+                
                 uint64_t rc;
                 while( 0 != (rc = reader.read(buf, sizeof(buf))) ) {
                     errif(1 != fwrite(buf, rc, 1, stdout),
@@ -142,7 +142,7 @@ int main(int argc, const char **argv) {
             FastaSequenceDesc seq;
             while(reader.nextSequence(seq)) {
                 char buf[16 * 1024];
-		
+                
                 uint64_t rc;
                 while( 0 != (rc = reader.read(buf, sizeof(buf))) ) {
                 }
@@ -169,7 +169,7 @@ int main(int argc, const char **argv) {
             out << ">" << seq.name << " " << seq.comment << endl;
 
             char buf[61];
-		
+                
             uint64_t rc;
             while( 0 != (rc = reader.read(buf, sizeof(buf)-1)) ) {
                 buf[rc] = 0;
