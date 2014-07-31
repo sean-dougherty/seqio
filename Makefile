@@ -16,6 +16,8 @@ target_fasta=bld/bin/fasta
 
 public_inc=$(shell ls src/seqio/*.h)
 
+.PHONY: all clean doc
+
 all: $(target_seqio) $(target_pna) $(target_fasta)
 
 $(target_seqio): $(src_seqio) $(inc_seqio) Makefile
@@ -38,3 +40,7 @@ install:
 
 clean:
 	rm -rf bld
+
+doc:
+	mkdir -p bld/doc/api
+	doxygen doc/doxygen/c-api.config
