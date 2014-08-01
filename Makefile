@@ -4,7 +4,7 @@ shared_flags=-fPIC -shared
 includes=-I src -I src/seqio
 
 src_seqio=$(shell ls src/seqio/*.cpp src/util.cpp)
-inc_seqio=$(shell ls src/seqio/*.h)
+inc_seqio=$(shell ls src/seqio/*.h src/seqio/*.hpp)
 target_seqio=bld/lib/libseqio.so
 
 src_pna=$(shell ls src/tools/pna/*.cpp src/util.cpp)
@@ -14,11 +14,16 @@ src_fasta=$(shell ls src/tools/fasta/*.cpp)
 inc_fasta=src/tools/fasta/kseq.h
 target_fasta=bld/bin/fasta
 
+target_doc=bld/doc/api/html/index.html
+
 public_inc=$(shell ls src/seqio/*.h)
 
-.PHONY: all clean doc
+
+.PHONY: all clean doc lib
 
 all: $(target_seqio) $(target_pna) $(target_fasta)
+lib: $(target_seqio)
+doc: $(target_doc)
 
 $(target_seqio): $(src_seqio) $(inc_seqio) Makefile
 	@mkdir -p $(@D)
@@ -41,6 +46,6 @@ install:
 clean:
 	rm -rf bld
 
-doc:
+$(target_doc): $(target_seqio)
 	mkdir -p bld/doc/api
 	doxygen doc/doxygen/c-api.config

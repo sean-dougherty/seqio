@@ -1,12 +1,51 @@
 #include "fasta.h"
+
+#include "seqio_impl.hpp"
 #include "util.h"
+
+#include <string.h>
 
 using namespace seqio;
 
-FastaReader::FastaReader(const char *path, Translate translate) {
-    errif(NULL == (f = gzopen(path, "r")),
-          "Failed opening %s", path);
+FastaRawStream::FastaRawStream(gzFile f_, seqio_base_transform transform)
+    : f(f_) {
 
+    fstate.offset = gztell(f);
+    start = fstate.offset;
+
+    initActions(transform);
+}
+
+FastaRawStream *FastaRawStream::createSubstream() {
+    FastaRawStream *substream = new FastaRawStream;
+    memcpy(substream, this, sizeof(*this));
+    substream->start = tell();
+    return substream;
+}
+
+int FastaRawStream::nextChar() {
+    z_off_t off = gzseek(f, fstate.offset, SEEK_SET);
+    if(off != fstate.offset) raise(IO, "Failed seeking to offset %zu", (size_t)off);
+
+    int rc = gzread(f, cache.buf, sizeof(cache.buf));
+    if(rc < 0) {
+        raise(IO, "Failed reading from file.");
+    } else if(rc == 0) {
+        fstate.eof = true;
+        return -1;
+    }
+    cache.index = 0;
+    cache.len = rc;
+    fstate.offset += rc;
+
+    return (int)cache.buf[cache.index++];
+}
+
+z_off_t FastaRawStream::tell() {
+    return fstate.offset + cache.index;
+}
+
+void FastaRawStream::initActions(seqio_base_transform transform) {
     for(int c = 0; c < 256; c++) {
         CharActionEntry &entry = actions[c];
 
@@ -21,7 +60,7 @@ FastaReader::FastaReader(const char *path, Translate translate) {
             entry.otherCol = CharActionEntry::APPEND;
         } else {
             entry.firstCol = entry.otherCol = CharActionEntry::APPEND;
-            if(translate == Translate_Caps_GATCN) {
+            if(transform == SEQIO_BASE_TRANSFORM_CAPS_GATCN) {
                 entry.c = toupper(entry.c);
                 switch(entry.c) {
                 case 'G':
@@ -37,6 +76,13 @@ FastaReader::FastaReader(const char *path, Translate translate) {
             }
         }
     }
+}
+
+FastaReader::FastaReader(const char *path, Translate translate) {
+    errif(NULL == (f = gzopen(path, "r")),
+          "Failed opening %s", path);
+
+    initActions(translate);
 }
 
 FastaReader::~FastaReader() {
@@ -143,19 +189,38 @@ void FastaReader::close() {
 }
 
 int FastaReader::nextChar() {
-    if(state == END) return -1;
+    throw 1;
+}
 
-    if(cache.index == cache.len) {
-        int rc;
-        errif((rc = gzread(f, cache.buf, sizeof(cache.buf))) < 0,
-              "Failed reading file");
-        if(rc == 0) {
-            state = END;
-            return -1;
+void FastaReader::initActions(Translate translate) {
+    for(int c = 0; c < 256; c++) {
+        CharActionEntry &entry = actions[c];
+
+        entry.c = c;
+
+        if((c == '\r') || (c == '\n')) {
+            entry.firstCol = entry.otherCol = CharActionEntry::NEWLINE;
+        } else if(!isgraph(c)) {
+            entry.firstCol = entry.otherCol = CharActionEntry::IGNORE;
+        } else if(c == '>') {
+            entry.firstCol = CharActionEntry::HEADER;
+            entry.otherCol = CharActionEntry::APPEND;
+        } else {
+            entry.firstCol = entry.otherCol = CharActionEntry::APPEND;
+            if(translate == Translate_Caps_GATCN) {
+                entry.c = toupper(entry.c);
+                switch(entry.c) {
+                case 'G':
+                case 'A':
+                case 'T':
+                case 'C':
+                    // no-op
+                    break;
+                default:
+                    entry.c = 'N';
+                    break;
+                }
+            }
         }
-        cache.index = 0;
-        cache.len = rc;
     }
-
-    return (int)cache.buf[cache.index++];
 }
