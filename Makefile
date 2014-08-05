@@ -51,6 +51,7 @@ install:
 	cp $(target_pna) /usr/local/bin
 	cp $(target_fasta) /usr/local/bin
 	cp $(public_inc) /usr/local/include
+	ldconfig
 
 clean:
 	rm -rf bld
