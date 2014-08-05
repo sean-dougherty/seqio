@@ -3,44 +3,42 @@
 #include "seqio.h"
 
 #include <cstdio>
-#include <string>
 
 namespace seqio {
     namespace impl {
 
-        class exception {
+        class Exception {
         public:
             seqio_err_info const err_info;
 
-            exception(seqio_err_info err_info_) 
+            Exception(seqio_err_info err_info_) 
                 : err_info(err_info_) {
             }
         };
 
-        class sequence_iterator_if {
+        class IMetadata {
         public:
-            virtual ~sequence_iterator_if() {}
+            virtual ~IMetadata() {}
 
-            virtual bool has_next_sequence() = 0;
-            virtual seqio_sequence *next_sequence() = 0;
+            virtual uint32_t getKeyCount() const = 0;
+            virtual char const *getKey(uint32_t key_index) const = 0;
+            virtual char const *getValue(char const *key) const = 0;
         };
 
-        class metadata_if {
+        class ISequence {
         public:
-            virtual ~metadata_if() {}
+            virtual ~ISequence() {}
 
-            virtual uint32_t get_key_count() = 0;
-            virtual char const *get_key(uint32_t key_index) = 0;
-            virtual char const *get_value(char const *key) = 0;
-        };
-
-        class sequence_if {
-        public:
-            virtual ~sequence_if() {}
-
-            virtual metadata_if *get_metadata() = 0;
+            virtual IMetadata const &getMetadata() = 0;
             virtual uint32_t read(char *buffer,
                                   uint32_t buffer_length) = 0;
+        };
+
+        class ISequenceIterator {
+        public:
+            virtual ~ISequenceIterator() {}
+
+            virtual ISequence *nextSequence() = 0;
         };
 
     }
@@ -50,5 +48,22 @@ namespace seqio {
             char message[4096];                                         \
             sprintf(message, MSG);                                      \
             seqio_err_info err_info = {SEQIO_ERR_##STATUS, message};    \
-            throw seqio::impl::exception(err_info);                     \
+            throw seqio::impl::Exception(err_info);                     \
         }
+
+#define raise_parm(MSG...) {                    \
+        raise(INVALID_PARAMETER, MSG);          \
+    }
+
+#define raise_io(MSG...) {                      \
+    raise(IO, MSG);                             \
+    }
+
+#define raise_oom(MSG...) {                      \
+        raise(OUT_OF_MEMORY, MSG);               \
+    }
+
+#define implement() {                                                   \
+        fprintf(stderr, "implement %s @ %s:%d\n", __FUNCTION__, __FILE__, __LINE__); \
+        abort();                                                        \
+    }

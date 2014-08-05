@@ -1,5 +1,5 @@
-#CXXFLAGS=-g -std=c++11 -Wall -Werror
-CXXFLAGS=-O2 -std=c++11 -Wall -Werror
+CXXFLAGS=-g -std=c++11 -Wall -Werror
+#CXXFLAGS=-O2 -std=c++11 -Wall -Werror
 shared_flags=-fPIC -shared
 includes=-I src -I src/seqio
 
@@ -14,16 +14,21 @@ src_fasta=$(shell ls src/tools/fasta/*.cpp)
 inc_fasta=src/tools/fasta/kseq.h
 target_fasta=bld/bin/fasta
 
+src_test=$(shell ls test/src/*.cpp)
+inc_test=$(shell ls test/src/*.h test/src/*.hpp)
+target_test=bld/bin/test
+
 target_doc=bld/doc/api/html/index.html
 
 public_inc=$(shell ls src/seqio/*.h)
 
 
-.PHONY: all clean doc lib
+.PHONY: all clean doc lib test
 
 all: $(target_seqio) $(target_pna) $(target_fasta)
 lib: $(target_seqio)
 doc: $(target_doc)
+test: $(target_test)
 
 $(target_seqio): $(src_seqio) $(inc_seqio) Makefile
 	@mkdir -p $(@D)
@@ -36,6 +41,10 @@ $(target_pna): $(src_pna) $(inc_seqio) $(target_seqio) Makefile
 $(target_fasta): $(src_fasta) $(inc_seqio) $(target_seqio) Makefile
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(src_fasta) $(includes) -o $@ -lseqio -L bld/lib -lz -lrt -lboost_filesystem -lboost_system
+
+$(target_test): $(src_test) $(inc_seqio) $(target_seqio) Makefile
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(src_test) $(includes) -o $@ -lseqio -L bld/lib -lrt
 
 install:
 	cp $(target_seqio) /usr/local/lib

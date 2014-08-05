@@ -36,7 +36,7 @@ typedef enum {
 } seqio_base_transform;
 
 /*!
-  Options passed to seqio_get_sequences().
+  Options passed to seqio_create_sequence_iterator().
  */
 typedef struct {
     seqio_base_transform base_transform;
@@ -72,15 +72,15 @@ typedef uint8_t seqio_bool;
   for a FASTA file containing 5 sequences will return 5 seqio_sequence handles.
 
   Resources associated with the iterator (e.g. file handle) will not be released until a call
-  to seqio_dispose_sequences().
+  to seqio_dispose_sequence_iterator().
 */
-typedef void *seqio_sequence_iterator;
+typedef struct __seqio_sequence_iterator *seqio_sequence_iterator;
 
 /*!
   Handle to an object representing a sequence, which can be used to obtain metadata
   (e.g. sequence name, comment) and sequence data.
 */
-typedef void *seqio_sequence;
+typedef struct __seqio_sequence *seqio_sequence;
 
 /*!
   Information passed to error handler.
@@ -100,7 +100,7 @@ extern "C" {
 #endif
 
 /*!
-  Provides reasonable default options for seqio_get_sequences():
+  Provides reasonable default options for seqio_create_sequence_iterator():
   - base_transform: SEQIO_BASE_TRANSFORM_NONE
 */
 extern seqio_sequence_options const SEQIO_DEFAULT_SEQUENCE_OPTIONS;
@@ -133,9 +133,9 @@ extern seqio_err_handler const SEQIO_ERR_HANDLER_RETURN;
   const char *name;
 
   // Open the file.
-  seqio_get_sequences("./test.fa.gz",
-                      SEQIO_DEFAULT_SEQUENCE_OPTIONS,
-                      &iterator);
+  seqio_create_sequence_iterator("./test.fa.gz",
+                        SEQIO_DEFAULT_SEQUENCE_OPTIONS,
+                        &iterator);
 
   // Get the first sequence.
   seqio_next_sequence(iterator, &sequence);
@@ -145,12 +145,13 @@ extern seqio_err_handler const SEQIO_ERR_HANDLER_RETURN;
   
   \endcode
 */
-seqio_status seqio_get_sequences(char const *path,
-                                 seqio_sequence_options options,
-                                 seqio_sequence_iterator *iterator);
+seqio_status seqio_create_sequence_iterator(char const *path,
+                                            seqio_sequence_options options,
+                                            seqio_sequence_iterator *iterator);
 
 /*!
-  Dispose the iterator and any sequences that were obtained from it.
+  Dispose the iterator. Any sequences that were obtained from it that have not
+  been disposed are still valid.
    
   \param [in,out] iterator The iterator to be disposed. Value is set to SEQIO_NIL_SEQUENCE_ITERATOR.
 
@@ -158,18 +159,7 @@ seqio_status seqio_get_sequences(char const *path,
 
   \note SEQIO_NIL_SEQUENCE_ITERATOR is accepted and is a no-op.
 */
-seqio_status seqio_dispose_sequences(seqio_sequence_iterator *iterator);
-
-/*!
-  Specifies if seqio_next_sequence() will return another sequence.
-
-  \param [in] iterator The iterator being tested.
-  \param [out] has_next On return, specifies whether another sequence exists.
-
-  \return SEQIO_SUCCESS if successful, otherwise SEQIO_ERR_*.
-*/
-    seqio_status seqio_has_next_sequence(seqio_sequence_iterator iterator,
-                                         seqio_bool *has_next);
+seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
 
 /*!
   Get the next sequence from the iterator. The result is placed in the sequence
@@ -189,18 +179,15 @@ seqio_status seqio_dispose_sequences(seqio_sequence_iterator *iterator);
   \code
   seqio_sequence_iterator iterator;
   seqio_sequence sequence;
-  seqio_bool has_next;
 
   char *buffer = NULL;
   uint32_t buffer_length;
 
   // ... create iterator ...
 
-  while( (seqio_has_next_sequence(iterator, &has_next) == SEQIO_SUCCESS)
-         && has_next) {
+  while( (seqio_next_sequence(iterator, &sequence) == SEQIO_SUCCESS)
+         && iterator) {
     uint32_t sequence_length;
-
-    seqio_next_sequence(iterator, &sequence);
 
     // By reading the sequence, the file pointer will be at the end of the sequence,
     // allowing the iterator to efficiently find the next sequence in a format like FASTA.
@@ -208,7 +195,7 @@ seqio_status seqio_dispose_sequences(seqio_sequence_iterator *iterator);
 
     // ... do stuff with sequence data ...
 
-    seqio_dispose(sequence);
+    seqio_dispose_sequence(sequence);
   }
 
   // ... dispose iterator and buffer ...
@@ -227,7 +214,7 @@ seqio_status seqio_dispose_sequences(seqio_sequence_iterator *iterator);
 
   \note SEQIO_NIL_SEQUENCE is accepted and is a no-op.
  */
-    seqio_status seqio_dispose(seqio_sequence *sequence);
+    seqio_status seqio_dispose_sequence(seqio_sequence *sequence);
 
 /*!
   Get the number of metadata keys for the sequence.
@@ -283,14 +270,17 @@ seqio_status seqio_dispose_sequences(seqio_sequence_iterator *iterator);
                             uint32_t *read_length);
 
 /*!
-  Read entirety of sequence, allocating buffer on client's behalf.
+  Read entirety of sequence, allocating buffer on client's behalf. If some portion of the
+  sequence has already been read via seqio_read(), that portion will not be included in the
+  result of read_all(). The result is guaranteed to be null-terminated; the null is not
+  included in read_length.
 
   \param [in] sequence The sequence to be read.
-  \param [out] sequence_length Upon return, number of bases read.
   \param [in,out] buffer Destination for bases. Client should not allocate the memory
                          pointed to by *buffer. *buffer should initially be NULL.
   \param [in,out] buffer_length Upon return, size of buffer in bytes. If *buffer parameter
                                 is NULL, this value is ignored.
+  \param [out] read_length Upon return, number of bases read.
 
   \return SEQIO_SUCCESS if successful, otherwise SEQIO_ERR_*.
 
@@ -300,13 +290,13 @@ seqio_status seqio_dispose_sequences(seqio_sequence_iterator *iterator);
   seqio_sequence sequence;
   char *buffer = NULL;
   uint32_t buffer_length;
-  uint32_t sequence_length;
+  uint32_t read_length;
 
   // ... obtain sequence iterator ...
 
   sequence = seqio_next_sequence(iterator, &sequence);
   seqio_read_all(sequence,
-                 &sequence_length,
+                 &read_length,
                  &buffer,
                  &buffer_length);
 
@@ -315,15 +305,15 @@ seqio_status seqio_dispose_sequences(seqio_sequence_iterator *iterator);
   \endcode
  */
     seqio_status seqio_read_all(seqio_sequence sequence,
-                                uint32_t *sequence_length,
                                 char **buffer,
-                                uint32_t *buffer_length);
+                                uint32_t *buffer_length,
+                                uint32_t *read_length);
 
 /*!
   Dispose a buffer allocated by the internal implementation (e.g. seqio_read_all()).
 
   \param [in,out] buffer The buffer to be disposed. *buffer can be NULL. Upon return,
-                         will be NULL.
+                         *buffer will be NULL.
 
   \return SEQIO_SUCCESS if successful, otherwise SEQIO_ERR_*.
 */  

@@ -22,6 +22,11 @@
 #define err(msg...) {fprintf(stderr, msg); fprintf(stderr, "\n"); exit(1);}
 #define errif(expr, msg...) if(expr) { err(msg); }
 
+#define panic() {                               \
+        fprintf(stderr, "PANIC!\n");            \
+        abort();                                \
+    }
+
 #ifdef UTIL_CL
 #define clx(expr) {cl_int __err = expr; if(__err != CL_SUCCESS) {std::cerr << #expr << " = " << __err << std::endl; exit(1);}}
 #endif
