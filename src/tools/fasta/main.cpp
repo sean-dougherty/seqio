@@ -1,5 +1,7 @@
-#include "fasta.h"
+#include "seqio.h"
 #include "util.h"
+
+#include <zlib.h>
 #include "kseq.h"
 
 #include <string.h>
@@ -17,15 +19,14 @@ KSEQ_INIT(gzFile, gzread)
 #pragma GCC diagnostic pop
 
 using namespace std;
-using namespace seqio;
 
-void translate(kseq_t *kseq, FastaReader::Translate translate);
+void transform(kseq_t *kseq, seqio_base_transform transform);
 
 void usage(string msg = "") {
-    epf("usage: fasta [--translate (none|caps_gatcn)] v[alidate] <fasta...>");
-    epf("       fasta [--translate (none|caps_gatcn)] cat <fasta...>");
-    epf("       fasta [--translate (none|caps_gatcn)] read <fasta...>");
-    epf("       fasta [--translate (none|caps_gatcn)] split fasta outdir");
+    epf("usage: fasta [--transform (none|caps_gatcn)] v[alidate] <fasta...>");
+    epf("       fasta [--transform (none|caps_gatcn)] cat <fasta...>");
+    epf("       fasta [--transform (none|caps_gatcn)] read <fasta...>");
+    epf("       fasta [--transform (none|caps_gatcn)] split fasta outdir");
 
     if(msg.length() > 0) {
         ep(msg.c_str());
@@ -35,24 +36,23 @@ void usage(string msg = "") {
 }
 
 int main(int argc, const char **argv) {
-
-    FastaReader::Translate translate = FastaReader::Translate_None;
+    seqio_sequence_options opts = SEQIO_DEFAULT_SEQUENCE_OPTIONS;
     
     int argi = 1;
     for(; argi < argc; argi++) {
         string flag = argv[argi];
         if(flag[0] != '-') break;
 
-        if(flag == "--translate") {
+        if(flag == "--transform") {
             argi++;
-            if(argi == argc) usage("Missing translate mode");
+            if(argi == argc) usage("Missing transform mode");
             string transtr = argv[argi];
             if(transtr == "none") {
-                translate = FastaReader::Translate_None;
+                opts.base_transform = SEQIO_BASE_TRANSFORM_NONE;
             } else if(transtr == "caps_gatcn") {
-                translate = FastaReader::Translate_Caps_GATCN;
+                opts.base_transform = SEQIO_BASE_TRANSFORM_CAPS_GATCN;
             } else {
-                usage("Invalid translate mode: "+transtr);
+                usage("Invalid transform mode: "+transtr);
             }
         } else {
             usage("Invalid flag: "+flag);
@@ -63,8 +63,13 @@ int main(int argc, const char **argv) {
         usage();
     }
 
+    char *buf = nullptr;
+    uint32_t buflen;
+
     string mode = argv[argi++];
     if((mode == "validate") || (mode == "v")) {
+
+
         for(; argi < argc; argi++) {
             const char *path = argv[argi];
 
@@ -73,81 +78,81 @@ int main(int argc, const char **argv) {
             gzFile fp = gzopen(path, "r");
             kseq_t *kseq = kseq_init(fp);
 
-            FastaReader reader(path, translate);
-            FastaSequenceDesc seq;
+            seqio_sequence_iterator iterator;
+            seqio_sequence sequence;
+            seqio_create_sequence_iterator(path, opts, &iterator);
 
             while(true) {
                 bool kseqNext = (kseq_read(kseq) >= 0);
                 if(kseqNext) {
-                    ::translate(kseq, translate);
+                    ::transform(kseq, opts.base_transform);
                 }
 
-                bool fastaNext = reader.nextSequence(seq);
+                seqio_next_sequence(iterator, &sequence);
+                bool fastaNext = sequence != nullptr;
                 errif(kseqNext != fastaNext, "next mismatch");
                 if(!kseqNext) break;
 
-                errif(seq.name != kseq->name.s,
+                char const *name, *comment;
+                seqio_get_value(sequence, SEQIO_KEY_NAME, &name);
+                seqio_get_value(sequence, SEQIO_KEY_COMMENT, &comment);
+                errif(string(name) != kseq->name.s,
                       "Name mismatch; kseq=%s, fasta=%s.",
-                      kseq->name.s, seq.name.c_str());
-                errif(seq.comment != kseq->comment.s,
+                      kseq->name.s, name);
+                errif(string(comment) != kseq->comment.s,
                       "Comment mismatch; kseq=%s, fasta=%s.",
-                      kseq->comment.s, seq.comment.c_str());
+                      kseq->comment.s, comment);
 
-                cout << "  " << seq.name << " " << seq.comment << endl;
+                cout << "  " << name << " " << comment << endl;
 
-                uint64_t fastaLen = 0;
-                uint64_t fastaRc = 0;
-                char buf[4 * 1024];
-                while( 0 != (fastaRc = reader.read(buf, sizeof(buf))) ) {
-                    for(uint64_t i = 0; i < fastaRc; i++) {
-                        errif(buf[i] != kseq->seq.s[fastaLen + i],
-                              "Base mismatch at %ld;"
-                              " kseq='%c', fasta='%c'",
-                              fastaLen + i,
-                              kseq->seq.s[fastaLen + i], buf[i]);
-                    }
-                    fastaLen += fastaRc;
+                uint32_t seqlen;
+                seqio_read_all(sequence, &buf, &buflen, &seqlen);
+
+                errif(seqlen != kseq->seq.l,
+                      "Length mismatch: kseq=%zu fasta=%zu",
+                      size_t(kseq->seq.l), size_t(seqlen));
+
+                for(uint32_t i = 0; i < seqlen; i++) {
+                    errif(buf[i] != kseq->seq.s[i],
+                          "Base mismatch at %zu;"
+                          " kseq='%c', fasta='%c'",
+                          size_t(i),
+                          kseq->seq.s[i], buf[i]);
                 }
 
-                errif(fastaLen != kseq->seq.l,
-                      "Length mismatch: kseq=%ld fasta=%ld",
-                      kseq->seq.l, fastaLen);
+                seqio_dispose_sequence(&sequence);
             }
-
             kseq_destroy(kseq);
             gzclose(fp);
         }
+
         cout << "SUCCESSFULL FASTA VALIDATION." << endl; 
-    } else if(mode == "cat") {
+    } else if(mode == "cat" || mode == "read") {
+        char *buf = nullptr;
+        uint32_t buflen;
+
         for(; argi < argc; argi++) {
             const char *path = argv[argi];
 
-            FastaReader reader(path, translate);
-            FastaSequenceDesc seq;
-            while(reader.nextSequence(seq)) {
-                char buf[16 * 1024];
+            seqio_sequence_iterator iterator;
+            seqio_sequence sequence;
+            seqio_create_sequence_iterator(path, opts, &iterator);
+
+            while( (0 == seqio_next_sequence(iterator, &sequence)) && sequence) {
+                uint32_t seqlen;
+                seqio_read_all(sequence, &buf, &buflen, &seqlen);
                 
-                uint64_t rc;
-                while( 0 != (rc = reader.read(buf, sizeof(buf))) ) {
-                    errif(1 != fwrite(buf, rc, 1, stdout),
+                if(mode == "cat") {
+                    errif(1 != fwrite(buf, seqlen, 1, stdout),
                           "Failed writing to stdout");
                 }
-            }
-        }
-    } else if(mode == "read") {
-        for(; argi < argc; argi++) {
-            const char *path = argv[argi];
 
-            FastaReader reader(path, translate);
-            FastaSequenceDesc seq;
-            while(reader.nextSequence(seq)) {
-                char buf[16 * 1024];
-                
-                uint64_t rc;
-                while( 0 != (rc = reader.read(buf, sizeof(buf))) ) {
-                }
+                seqio_dispose_sequence(&sequence);
             }
+
+            seqio_dispose_sequence_iterator(&iterator);
         }
+
     } else if(mode == "split") {
         if( (argc - argi) != 2) {
             usage();
@@ -160,39 +165,49 @@ int main(int argc, const char **argv) {
         }
         errif(!boost::filesystem::is_directory(path_outdir), "Output not a directory");
 
-        FastaReader reader(path_in.c_str(), translate);
-        FastaSequenceDesc seq;
-        while(reader.nextSequence(seq)) {
-            boost::filesystem::path path_out = path_outdir / (seq.name + ".fa");
-            ofstream out(path_out.c_str());
+        seqio_sequence_iterator iterator;
+        seqio_sequence sequence;
+        seqio_create_sequence_iterator(path_in.c_str(), opts, &iterator);
 
-            out << ">" << seq.name << " " << seq.comment << endl;
+        while( (0 == seqio_next_sequence(iterator, &sequence)) && sequence) {
+            char const *name, *comment;
+            seqio_get_value(sequence, SEQIO_KEY_NAME, &name);
+            seqio_get_value(sequence, SEQIO_KEY_COMMENT, &comment);
 
-            char buf[61];
-                
-            uint64_t rc;
-            while( 0 != (rc = reader.read(buf, sizeof(buf)-1)) ) {
-                buf[rc] = 0;
-                out << buf << endl;
-            }
+            uint32_t seqlen;
+            seqio_read_all(sequence, &buf, &buflen, &seqlen);
 
-            out.close();
+            boost::filesystem::path path_out = path_outdir / (string(name) + ".fa");
+
+            seqio_writer writer;
+            seqio_create_writer(path_out.c_str(),
+                                SEQIO_DEFAULT_WRITER_OPTIONS,
+                                &writer);
+
+            seqio_create_sequence(writer);
+            seqio_add_metadata(writer, SEQIO_KEY_NAME, name);
+            seqio_add_metadata(writer, SEQIO_KEY_COMMENT, comment);
+            seqio_write(writer, buf, seqlen);
+
+            seqio_dispose_writer(&writer);
         }
     } else {
         usage("Invalid mode: "+mode);
     }
+
+    seqio_dispose_buffer(&buf);
     
     return 0;
 }
 
-void translate(kseq_t *kseq, FastaReader::Translate translate) {
+void transform(kseq_t *kseq, seqio_base_transform base_transform) {
     char base_map[256];
 
-    switch(translate) {
-    case FastaReader::Translate_None:
+    switch(base_transform) {
+    case SEQIO_BASE_TRANSFORM_NONE:
         // no-op
         return;
-    case FastaReader::Translate_Caps_GATCN:
+    case SEQIO_BASE_TRANSFORM_CAPS_GATCN:
         for(int i = 0; i < 256; i++) {
             base_map[i] = 'N';
         }

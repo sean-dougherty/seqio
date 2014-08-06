@@ -11,6 +11,71 @@ using namespace seqio::impl;
 
 #define NCOLUMNS uint32_t(80)
 
+namespace seqio {
+    namespace impl {
+
+        static vector<string> fasta_ext = {
+            ".fasta", ".fas", ".fna", ".ffn", ".faa", ".frn", ".fa", ".mfa"
+        };
+        static vector<string> fasta_gzip_ext = {
+            ".fasta.gz", ".fas.gz", ".fna.gz", ".ffn.gz", ".faa.gz", ".frn.gz", ".fa.gz", ".mfa.gz"
+        };
+
+
+        bool is_fasta_file_content(char const *path) {
+            bool firstCol = true;
+            char buf[4*1024];
+            gzFile f;
+            int rc;
+
+            f = gzopen(path, "r");
+            if(!f)
+                goto fail;
+
+            rc = gzread(f, buf, sizeof(buf));
+            if(rc < 1)
+                goto fail;
+
+            for(int i = 0; i < rc; i++) {
+                char c = buf[i];
+                if(c == '>' && firstCol)
+                    goto succeed;
+                else if(c == '\n')
+                    firstCol = true;
+                else if(c <= 0)
+                    goto fail;
+                else
+                    firstCol = false;
+            }
+            goto fail;
+
+        succeed:
+            gzclose(f);
+            return true;
+
+        fail:
+            if(f) gzclose(f);
+            return false;
+        }
+
+        bool is_fasta_file_name(char const *path) {
+            for(string ext: fasta_ext)
+                if(has_suffix(path, ext))
+                    return true;
+
+            return false;
+        }
+
+        bool is_fasta_gzip_file_name(char const *path) {
+            for(string ext: fasta_gzip_ext)
+                if(has_suffix(path, ext))
+                    return true;
+
+            return false;
+        }
+
+    }
+}
 /**********************************************************************
  *
  * CLASS FileHandle

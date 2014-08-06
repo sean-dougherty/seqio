@@ -13,6 +13,10 @@
 namespace seqio {
     namespace impl {
 
+        bool is_fasta_file_content(char const *path);
+        bool is_fasta_file_name(char const *path);
+        bool is_fasta_gzip_file_name(char const *path);
+
 /**********************************************************************
  *
  * CLASS FileHandle
@@ -156,7 +160,7 @@ namespace seqio {
                                   seqio_base_transform transform);
             virtual ~FastaSequenceIterator();
 
-            virtual ISequence *nextSequence();
+            virtual ISequence *nextSequence() override;
 
         private:
             class Callback {

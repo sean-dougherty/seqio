@@ -31,6 +31,11 @@ vector<string> split(const string &str, const string &delims) {
     return result;
 }
 
+bool has_suffix(const std::string &str, const std::string &suffix) {
+    return str.size() >= suffix.size() &&
+        str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 void Timer::EntryReport::echo() {
     cout << desc;
     if(n == 1) {

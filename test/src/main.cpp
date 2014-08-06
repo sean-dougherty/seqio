@@ -31,7 +31,7 @@ void test_fasta_write() {
     char *seq = create_random_bases(seqlen);
 
     {
-        seqio_writer_options opts = {SEQIO_FILE_FORMAT_FASTA_GZIP};
+        seqio_writer_options opts = {SEQIO_FILE_FORMAT_FASTA};
         seqio_writer writer;
         seqio_create_writer("/tmp/seqio.fa",
                             opts,
@@ -59,12 +59,33 @@ void test_fasta_write() {
     free(seq);
 }
 
+void test_pna_write() {
+    seqio_set_err_handler(SEQIO_ERR_HANDLER_ABORT);
+
+    verify_write(SEQIO_FILE_FORMAT_PNA, "/tmp/seqio.pna");
+}
+
+void test_read_all__small() {
+    seqio_set_err_handler(SEQIO_ERR_HANDLER_ABORT);
+    verify_read_all(16);
+}
+
+void test_read_all__large() {
+    seqio_set_err_handler(SEQIO_ERR_HANDLER_ABORT);
+    verify_read_all(16 * 1024 * 1024);
+}
+
 
 int main(int argc, const char **argv) {
+    test_pna_write();
     test_fasta_write();
+
+    test_read_all__small();
+    test_read_all__large();
 
     test_fasta_plain__sequential();
     test_fasta_gzip__sequential();
+
     test_fasta_plain__out_of_order();
     test_fasta_gzip__out_of_order();
 

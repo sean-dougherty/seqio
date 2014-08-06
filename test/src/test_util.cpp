@@ -146,3 +146,81 @@ void verify_a__out_of_order(char const *path) {
     verify_sequence(sequences[1], "seq2", "", "acgtACGT");
     verify_sequence(sequences[0], "seq1", "comment1.0 comment1.1", "aAgGcCtT");
 }
+
+void verify_read_all(uint32_t seqlen) {
+    char *seq = create_random_bases(seqlen);
+
+    {
+        seqio_writer_options opts = {SEQIO_FILE_FORMAT_FASTA};
+        seqio_writer writer;
+        seqio_create_writer("/tmp/seqio.fa",
+                            opts,
+                            &writer);
+
+        seqio_create_sequence(writer);
+        seqio_add_metadata(writer, SEQIO_KEY_NAME, "seq1");
+        seqio_add_metadata(writer, SEQIO_KEY_COMMENT, "comment1.0 comment1.1");
+        seqio_write(writer, seq, seqlen);
+
+        seqio_dispose_writer(&writer);
+    }
+
+    {
+        seqio_sequence_iterator iterator;
+        seqio_create_sequence_iterator("/tmp/seqio.fa",
+                                       SEQIO_DEFAULT_SEQUENCE_OPTIONS,
+                                       &iterator);
+
+        seqio_sequence sequence;
+        seqio_next_sequence(iterator, &sequence);
+        
+        char *buffer = nullptr;
+        uint32_t buffer_length;
+        uint32_t read_length;
+        
+        seqio_read_all(sequence, &buffer, &buffer_length, &read_length);
+
+        assert(read_length == seqlen);
+        assert(buffer_length >= seqlen + 1);
+        assert(strlen(buffer) == seqlen);
+        assert(0 == strcmp(buffer, seq));
+
+        seqio_dispose_buffer(&buffer);
+    }
+    
+    free(seq);
+}
+
+void verify_write(seqio_file_format file_format, char const *path) {
+    seqio_set_err_handler(SEQIO_ERR_HANDLER_ABORT);
+    uint32_t const seqlen = 1024 * 1024 * 16;
+    char *seq = create_random_bases(seqlen);
+
+    {
+        seqio_writer_options opts = {file_format};
+        seqio_writer writer;
+        seqio_create_writer(path,
+                            opts,
+                            &writer);
+
+        seqio_create_sequence(writer);
+        seqio_add_metadata(writer, SEQIO_KEY_NAME, "seq1");
+        seqio_add_metadata(writer, SEQIO_KEY_COMMENT, "comment1.0 comment1.1");
+        seqio_write(writer, seq, seqlen);
+
+        seqio_dispose_writer(&writer);
+    }
+
+    {
+        seqio_sequence_iterator iterator;
+        seqio_create_sequence_iterator(path,
+                                       SEQIO_DEFAULT_SEQUENCE_OPTIONS,
+                                       &iterator);
+
+        seqio_sequence sequence;
+        seqio_next_sequence(iterator, &sequence);
+        verify_sequence(sequence, "seq1", "comment1.0 comment1.1", seq);
+    }
+
+    free(seq);    
+}

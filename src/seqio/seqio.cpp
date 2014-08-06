@@ -1,13 +1,21 @@
 #include "seqio.h"
 
 #include "fasta.hpp"
+#include "pna_impl.hpp"
 
 #include <cstdio>
 #include <cstdlib>
 
 using namespace seqio::impl;
 
-seqio_sequence_options const SEQIO_DEFAULT_SEQUENCE_OPTIONS = {SEQIO_BASE_TRANSFORM_NONE};
+seqio_sequence_options const SEQIO_DEFAULT_SEQUENCE_OPTIONS = {
+    SEQIO_FILE_FORMAT_DEDUCE,
+    SEQIO_BASE_TRANSFORM_NONE
+};
+
+seqio_writer_options const SEQIO_DEFAULT_WRITER_OPTIONS = {
+    SEQIO_FILE_FORMAT_DEDUCE
+};
 
 static seqio_status  __err_abort(seqio_err_info err_info);
 static seqio_status __err_return(seqio_err_info err_info);
@@ -50,8 +58,26 @@ seqio_status seqio_create_sequence_iterator(char const *path,
 
     ISequenceIterator *impl;
 
+    if(options.file_format == SEQIO_FILE_FORMAT_DEDUCE) {
+        if(is_pna_file_content(path)) {
+            options.file_format = SEQIO_FILE_FORMAT_PNA;
+        } else {
+            options.file_format = SEQIO_FILE_FORMAT_FASTA;
+        }
+    }
+
     try {
-        impl = new FastaSequenceIterator(path, options.base_transform);
+        switch(options.file_format) {
+        case SEQIO_FILE_FORMAT_FASTA:
+        case SEQIO_FILE_FORMAT_FASTA_GZIP:
+            impl = new FastaSequenceIterator(path, options.base_transform);
+            break;
+        case SEQIO_FILE_FORMAT_PNA:
+            impl = new PnaSequenceIterator(path, options.base_transform);
+            break;
+        default:
+            raise_parm("Invalid file format.");
+        }
     } catch(Exception x) {
         return err_handler(x.err_info);
     }
@@ -100,6 +126,36 @@ seqio_status seqio_dispose_sequence(seqio_sequence *sequence) {
 
     return SEQIO_SUCCESS;
 }
+
+seqio_status seqio_get_key_count(seqio_sequence sequence,
+                                 uint32_t *count) {
+    check_null(sequence);
+    check_null(count);
+    
+    try {
+        *count = ((ISequence *)sequence)->getMetadata().getKeyCount();
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;        
+}
+
+seqio_status seqio_get_key(seqio_sequence sequence,
+                           uint32_t key_index,
+                           char const **key) {
+    check_null(sequence);
+    check_null(key);
+    
+    try {
+        *key = ((ISequence *)sequence)->getMetadata().getKey(key_index);
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;        
+}
+
 
 seqio_status seqio_get_value(seqio_sequence sequence,
                              char const *key,
@@ -168,7 +224,9 @@ seqio_status seqio_read_all(seqio_sequence sequence,
 
         while( (nread = iseq->read(*buffer + nread_total, *buffer_length - nread_total)) != 0) {
             nread_total += nread;
-            grow_to(*buffer_length * 2);
+            if(nread_total == *buffer_length) {
+                grow_to(*buffer_length * 2);
+            }
         }
 
         if(nread_total == *buffer_length) {
@@ -194,7 +252,29 @@ seqio_status seqio_create_writer(char const *path,
     IWriter *iwriter;
 
     try {
-        iwriter = new FastaWriter(path, options.file_format);
+        if(options.file_format == SEQIO_FILE_FORMAT_DEDUCE) {
+            if(is_fasta_file_name(path))
+                options.file_format = SEQIO_FILE_FORMAT_FASTA;
+            else if(is_fasta_gzip_file_name(path))
+                options.file_format = SEQIO_FILE_FORMAT_FASTA_GZIP;
+            else if(is_pna_file_name(path))
+                options.file_format = SEQIO_FILE_FORMAT_PNA;
+            else
+                raise_parm("Cannot deduce file format from file extension.");
+        }
+
+        switch(options.file_format) {
+        case SEQIO_FILE_FORMAT_FASTA:
+        case SEQIO_FILE_FORMAT_FASTA_GZIP:
+            iwriter = new FastaWriter(path, options.file_format);
+            break;
+        case SEQIO_FILE_FORMAT_PNA:
+            iwriter = new PnaWriter(path, options.file_format);
+            break;
+        default:
+            raise_parm("Invalid file_format specified.");
+        }
+
     } catch(Exception x) {
         return err_handler(x.err_info);
     }

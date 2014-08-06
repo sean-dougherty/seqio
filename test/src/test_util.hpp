@@ -17,3 +17,5 @@ void verify_sequence(seqio_sequence sequence,
                      char const *bases);
 void verify_a__sequential(char const *path);
 void verify_a__out_of_order(char const *path);
+void verify_read_all(uint32_t seqlen);
+void verify_write(seqio_file_format file_format, char const *path);

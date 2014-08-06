@@ -55,6 +55,8 @@ std::string join(Container cont, const std::string &glue = " ") {
     return join(cont.begin(), cont.end(), glue);
 }
 
+bool has_suffix(const std::string &str, const std::string &suffix);
+
 class Timer {
     class EntryReport {
     public:

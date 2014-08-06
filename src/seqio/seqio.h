@@ -24,6 +24,13 @@
  */
 #define SEQIO_NIL_SEQUENCE_ITERATOR ((seqio_sequence_iterator *)0)
 
+typedef enum {
+    SEQIO_FILE_FORMAT_DEDUCE,
+    SEQIO_FILE_FORMAT_FASTA,
+    SEQIO_FILE_FORMAT_FASTA_GZIP,
+    SEQIO_FILE_FORMAT_PNA
+} seqio_file_format;
+
 /*!
   Specifies transformation that should be applied to bases prior to being placed in
   client read buffer.
@@ -39,15 +46,9 @@ typedef enum {
   Options passed to seqio_create_sequence_iterator().
  */
 typedef struct {
+    seqio_file_format file_format;
     seqio_base_transform base_transform;
 } seqio_sequence_options;
-
-typedef enum {
-    SEQIO_FILE_FORMAT_UNKNOWN,
-    SEQIO_FILE_FORMAT_FASTA,
-    SEQIO_FILE_FORMAT_FASTA_GZIP,
-    SEQIO_FILE_FORMAT_PNA
-} seqio_file_format;
 
 typedef struct {
     seqio_file_format file_format;
@@ -118,6 +119,7 @@ extern "C" {
   - base_transform: SEQIO_BASE_TRANSFORM_NONE
 */
 extern seqio_sequence_options const SEQIO_DEFAULT_SEQUENCE_OPTIONS;
+extern seqio_writer_options const SEQIO_DEFAULT_WRITER_OPTIONS;
 
 extern seqio_err_handler const SEQIO_ERR_HANDLER_ABORT;
 extern seqio_err_handler const SEQIO_ERR_HANDLER_RETURN;

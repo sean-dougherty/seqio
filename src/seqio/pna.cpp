@@ -8,14 +8,46 @@
 
 #include <algorithm>
 
+#include "pna.hpp"
+#include "seqio_impl.hpp"
 #include "util.h"
-#include "pna.h"
 
 using namespace std;
-using namespace seqio;
+using namespace seqio::pna;
 
 #define MAX_SEQFRAGMENT_LEN ((uint32_t)~0)
 #define MAX_STRING_STORAGE ((uint32_t)~0)
+
+namespace seqio {
+    namespace pna {
+
+        bool is_pna_file_content(char const *path) {
+            FILE *f = fopen(path, "r");
+
+            if(!f)
+                goto fail;
+    
+            header_t header;
+            if(1 != fread(&header, sizeof(header), 1, f))
+                goto fail;
+
+            if(header.signature != PNA_FILE_SIGNATURE)
+                goto fail;
+
+            fclose(f);
+            return true;
+
+        fail:
+            if(f) fclose(f);
+            return false;
+        }
+
+        bool is_pna_file_name(char const *path) {
+            return has_suffix(path, ".pna");
+        }
+
+    }
+}
 
 PnaMetadata::PnaMetadata() 
     : entries({nullptr, nullptr, 0l})
@@ -434,6 +466,13 @@ PnaReader::PnaReader(const char *path_)
     errif(1 != fread(&header, sizeof(header), 1, f),
           "Failed reading header of %s.", path.c_str());
 
+    if(header.signature != PNA_FILE_SIGNATURE) {
+        raise_io("PNA file signature not found.");
+    }
+    if(header.version != PNA_VERSION) {
+        raise_io("Unsupported PNA version: %zu", size_t(header.version));
+    }
+
     //
     // mmap strings, metadata, and sequence_t
     //
@@ -624,7 +663,7 @@ PnaSequenceWriter::~PnaSequenceWriter() {
     close();
 }
 
-void PnaSequenceWriter::write(char *buf, uint64_t buflen) {
+void PnaSequenceWriter::write(char const *buf, uint64_t buflen) {
     errif(!fpna, "Sequence closed.");
 
     for(uint64_t bufOffset = 0; bufOffset < buflen; bufOffset++, seqOffset++) {
@@ -734,6 +773,9 @@ PnaWriter::PnaWriter(const char *path) // todo: const string &
 {
     f = fopen(path, "w");
     memset(&header, 0, sizeof(header));
+
+    header.signature = PNA_FILE_SIGNATURE;
+    header.version = PNA_VERSION;
 
     errif(0 != fseeko(f, sizeof(header), SEEK_SET),
           "Failed seeking past header");

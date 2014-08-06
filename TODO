@@ -1,0 +1,28 @@
+*** IMPL ***
+- pna
+   x bridge
+   x use pna from c api
+   - test bridge
+   - convert err() to raise()
+   - pna logical keys
+   x verify signature
+
+- thread-safe fasta reader
+  - seek/read of stream must be in mutex
+  - read/tellEnd of sequence must be in mutex
+
+x determine type from file
+
+- port cli tools to use c api
+
+- sequence seek
+
+- use uint64_t for read
+
+*** TEST ***
+- partial read of fasta sequence, followed by iteration.
+- thread safety of fasta reader
+- get_key, get_value, set_err_handler (return)
+
+*** DOC ***
+- writer functions
