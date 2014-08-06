@@ -185,11 +185,88 @@ seqio_status seqio_read_all(seqio_sequence sequence,
     return SEQIO_SUCCESS;    
 }
 
+seqio_status seqio_create_writer(char const *path,
+                                 seqio_writer_options options,
+                                 seqio_writer *writer) {
+    check_null(path);
+    check_null(writer);
+
+    IWriter *iwriter;
+
+    try {
+        iwriter = new FastaWriter(path, options.file_format);
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    *writer = (seqio_writer)iwriter;
+
+    return SEQIO_SUCCESS;
+}
+
+seqio_status seqio_dispose_writer(seqio_writer *writer) {
+    if(writer && *writer) {
+        try {
+            delete (IWriter *)*writer;
+            *writer = nullptr;
+        } catch(Exception x) {
+            return err_handler(x.err_info);
+        }
+    }
+
+    return SEQIO_SUCCESS;
+}
+
+seqio_status seqio_create_sequence(seqio_writer writer) {
+    check_null(writer);
+
+    try {
+        ((IWriter *)writer)->createSequence();
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;
+}
+
+seqio_status seqio_add_metadata(seqio_writer writer,
+                                char const *key,
+                                char const *value) {
+   check_null(writer);
+   check_null(key);
+   check_null(value);
+
+    try {
+        ((IWriter *)writer)->addMetadata(key, value);
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;
+}
+
+seqio_status seqio_write(seqio_writer writer,
+                         char const *buffer,
+                         uint32_t length) {
+   check_null(writer);
+   check_null(buffer);
+
+    try {
+        ((IWriter *)writer)->write(buffer, length);
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;
+}
+
 seqio_status seqio_dispose_buffer(char **buffer) {
     if(buffer && *buffer) {
         free(*buffer);
         *buffer = NULL;
     }
+
+    return SEQIO_SUCCESS;
 }
 
 seqio_status seqio_set_err_handler(seqio_err_handler err_handler_) {

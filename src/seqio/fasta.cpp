@@ -9,6 +9,8 @@ using std::string;
 using std::vector;
 using namespace seqio::impl;
 
+#define NCOLUMNS uint32_t(80)
+
 /**********************************************************************
  *
  * CLASS FileHandle
@@ -358,152 +360,123 @@ void FastaSequenceIterator::Callback::iteratorClosing() {
 
 /**********************************************************************
  *
- * OBSOLETE
+ * CLASS FastaWriter
  *
  **********************************************************************/
-FastaReader::FastaReader(const char *path, Translate translate) {
-    errif(NULL == (f = gzopen(path, "r")),
-          "Failed opening %s", path);
 
-    initActions(translate);
+FastaWriter::FastaWriter(char const *path,
+                         seqio_file_format file_format) {
+    state = INIT;
+
+    switch(file_format) {
+    case SEQIO_FILE_FORMAT_FASTA: {
+        FILE *f = fopen(path, "w");
+
+        doWrite = [=] (char const *buffer, uint32_t len) {
+            size_t rc = fwrite(buffer, 1, len, f);
+            if(rc != len)
+                raise_io("Failed writing to %s", path);
+        };
+
+        doClose = [=] () {
+            fclose(f);
+        };
+    } break;
+    case SEQIO_FILE_FORMAT_FASTA_GZIP: {
+        gzFile f = gzopen(path, "w");
+
+        doWrite = [=] (char const *buffer, uint32_t len) {
+            size_t rc = gzwrite(f, buffer, len);
+            if(rc != len)
+                raise_io("Failed writing to %s", path);
+        };
+
+        doClose = [=] () {
+            gzclose(f);
+        };
+    } break;
+    default:
+        panic();
+    }
 }
 
-FastaReader::~FastaReader() {
-    close();
+FastaWriter::~FastaWriter() {
+    doClose();
 }
 
-bool FastaReader::nextSequence(FastaSequenceDesc &desc) {
-    errif(state == SEQ, "Currently in sequence");
-
-    desc.name.clear();
-    desc.comment.clear();
-
-    if(state == END) return false;
-
-    int c;
-    if(state == INIT) {
-        bool foundHeader = false;
-        while((c = nextChar()) > -1) {
-            if((c == '\n') || (c == '\r')) {
-                firstCol = true;
-            } else if((c == '>') && firstCol) {
-                foundHeader = true;
-                break;
-            } else {
-                firstCol = false;
-            }
-        }
-
-        if(!foundHeader) return false;
+void FastaWriter::createSequence() {
+    switch(state) {
+    case INIT:
+    case BASES:
+        state = META;
+        name = "";
+        comment = "";
+        column = 0;
+        break;
+    case META:
+        raise_state("No bases written");
     }
-
-    while(!isspace(c = nextChar()) && (c > -1)) {
-        desc.name += c;
-    }
-
-    if(c == -1) return false;
-
-    if((c != '\n') && (c != '\r')) {
-        while(((c = nextChar()) != '\n') && (c != '\r') && (c > -1)) {
-            desc.comment += c;
-        }
-        if(c == -1) return false;
-    }
-
-    state = SEQ;
-    firstCol = true;
-
-    return true;
 }
 
-uint32_t FastaReader::read(char *buf, uint32_t buflen) {
-    if(state != SEQ) return 0;
-
-    uint32_t n = 0;
-    int c;
-
-    while((n < buflen) && (c = nextChar()) != -1) {
-        CharActionEntry entry = actions[c];
-
-        if(firstCol) {
-            CharActionEntry::Action action = entry.firstCol;
-            switch(action) {
-            case CharActionEntry::APPEND:
-                firstCol = false;
-                buf[n++] = entry.c;
-                break;
-            case CharActionEntry::NEWLINE:
-                // no-op
-                break;
-            case CharActionEntry::HEADER:
-                firstCol = false;
-                state = HEADER;
-                goto break_outer;
-                break;
-            default:
-                err("Program logic error");
-                break;
-            }
+void FastaWriter::addMetadata(char const *key,
+                              char const *value) {
+    switch(state) {
+    case INIT:
+        raise_state("Must create sequence.");
+    case META: {
+        if(0 == strcmp(key, SEQIO_KEY_NAME)) {
+            name = value;
+        } else if(0 == strcmp(key, SEQIO_KEY_COMMENT)) {
+            comment = value;
         } else {
-            CharActionEntry::Action action = entry.otherCol;
-            switch(action) {
-            case CharActionEntry::APPEND:
-                buf[n++] = entry.c;
-                break;
-            case CharActionEntry::NEWLINE:
-                firstCol = true;
-                break;
-            default:
-                err("Program logic error");
-            }
-        }            
-    }
-break_outer:
-
-    return n;
-}
-
-void FastaReader::close() {
-    if(!f) return;
-
-    errif(0 > gzclose(f),
-          "Failed closing gzip file");
-    f = NULL;
-}
-
-int FastaReader::nextChar() {
-    abort();
-}
-
-void FastaReader::initActions(Translate translate) {
-    for(int c = 0; c < 256; c++) {
-        CharActionEntry &entry = actions[c];
-
-        entry.c = c;
-
-        if((c == '\r') || (c == '\n')) {
-            entry.firstCol = entry.otherCol = CharActionEntry::NEWLINE;
-        } else if(!isgraph(c)) {
-            entry.firstCol = entry.otherCol = CharActionEntry::IGNORE;
-        } else if(c == '>') {
-            entry.firstCol = CharActionEntry::HEADER;
-            entry.otherCol = CharActionEntry::APPEND;
-        } else {
-            entry.firstCol = entry.otherCol = CharActionEntry::APPEND;
-            if(translate == Translate_Caps_GATCN) {
-                entry.c = toupper(entry.c);
-                switch(entry.c) {
-                case 'G':
-                case 'A':
-                case 'T':
-                case 'C':
-                    // no-op
-                    break;
-                default:
-                    entry.c = 'N';
-                    break;
-                }
-            }
+            raise_parm("Invalid FASTA key: '%s'", key);
         }
+    } break;
+    case BASES:
+        raise_state("Cannot alter metadata once bases have been written.");
+        break;
     }
+}
+
+void FastaWriter::write(char const *buffer,
+                        uint32_t length) {
+    switch(state) {
+    case INIT:
+        raise_state("Must create sequence");
+    case META:
+        writeMetadata();
+        state = BASES;
+        break;
+    case BASES:
+        // no-op
+        break;
+    }
+
+    while(length > 0) {
+        uint32_t write_length = std::min(NCOLUMNS - column, length);
+        doWrite(buffer, write_length);
+        doWrite("\n", 1);
+        
+        buffer += write_length;
+        length -= write_length;
+
+        column += write_length;
+        if(column == NCOLUMNS)
+            column = 0;
+    }
+}
+
+void FastaWriter::writeMetadata() {
+    if(name.length() == 0)
+        raise_state("Must specify sequence name");
+
+    doWrite(">", 1);
+    doWrite(name.c_str(), name.length());
+
+    if(comment.length() > 0) {
+        doWrite(" ", 1);
+        doWrite(comment.c_str(), comment.length());
+    }
+    
+    doWrite("\n", 1);
 }

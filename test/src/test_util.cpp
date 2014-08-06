@@ -6,6 +6,7 @@
 #include <sys/resource.h>
 
 #include <cstring>
+#include <random>
 #include <vector>
 
 using namespace std;
@@ -32,6 +33,21 @@ int open_count(char const *path) {
     return fd_counter;
 }
 
+char *create_random_bases(uint32_t len) {
+    char *seq = (char *)malloc(len + 1);
+    char bases[] = {'A','T','G','C'};
+    
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> dist(0, 3);
+
+    for(uint32_t i = 0; i < len; i++) {
+        seq[i] = bases[dist(generator)];
+    }
+    seq[len] = 0;
+
+    return seq;
+}
+
 void verify_basic_metadata(seqio_sequence sequence, char const *name, char const *comment) {
     {    
         const char *name_;
@@ -48,13 +64,17 @@ void verify_basic_metadata(seqio_sequence sequence, char const *name, char const
 
 void verify_bases(seqio_sequence sequence, char const *expected, uint32_t buflen) {
     uint32_t seqlen = strlen(expected);
-    char buf[seqlen+1];
+    char *buf = (char *)malloc(seqlen+1);
     memset(buf, 0, seqlen+1);
 
     uint32_t total_read_length = 0;
     uint32_t read_length;
     while( (seqio_read(sequence, buf + total_read_length, buflen, &read_length) == SEQIO_SUCCESS)
            && (read_length > 0) ) {
+
+        for(uint32_t i = total_read_length; i < total_read_length + read_length; i++) {
+            assert(buf[i] == expected[i]);
+        }
 
         total_read_length += read_length;
         assert(total_read_length <= seqlen);
@@ -65,6 +85,8 @@ void verify_bases(seqio_sequence sequence, char const *expected, uint32_t buflen
 
     seqio_read(sequence, buf, buflen, &read_length);
     assert(read_length == 0);
+
+    free(buf);
 }
 
 void verify_sequence(seqio_sequence sequence,

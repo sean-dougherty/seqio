@@ -42,16 +42,28 @@ typedef struct {
     seqio_base_transform base_transform;
 } seqio_sequence_options;
 
+typedef enum {
+    SEQIO_FILE_FORMAT_UNKNOWN,
+    SEQIO_FILE_FORMAT_FASTA,
+    SEQIO_FILE_FORMAT_FASTA_GZIP,
+    SEQIO_FILE_FORMAT_PNA
+} seqio_file_format;
+
+typedef struct {
+    seqio_file_format file_format;
+} seqio_writer_options;
+
 /*!
   The possible return values for seqio_get_status()
 */
 typedef enum {
     SEQIO_SUCCESS = 0, 
     SEQIO_ERR_INVALID_PARAMETER = 1, 
-    SEQIO_ERR_FILE_NOT_FOUND = 2,
-    SEQIO_ERR_IO = 3,
-    SEQIO_ERR_KEY_NOT_FOUND = 4,
-    SEQIO_ERR_OUT_OF_MEMORY = 5
+    SEQIO_ERR_INVALID_STATE = 2, 
+    SEQIO_ERR_FILE_NOT_FOUND = 3,
+    SEQIO_ERR_IO = 4,
+    SEQIO_ERR_KEY_NOT_FOUND = 5,
+    SEQIO_ERR_OUT_OF_MEMORY = 6
 } seqio_status;
 
 /*!
@@ -81,6 +93,8 @@ typedef struct __seqio_sequence_iterator *seqio_sequence_iterator;
   (e.g. sequence name, comment) and sequence data.
 */
 typedef struct __seqio_sequence *seqio_sequence;
+
+typedef struct __seqio_writer *seqio_writer;
 
 /*!
   Information passed to error handler.
@@ -308,6 +322,23 @@ seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
                                 char **buffer,
                                 uint32_t *buffer_length,
                                 uint32_t *read_length);
+
+    seqio_status seqio_create_writer(char const *path,
+                                     seqio_writer_options options,
+                                     seqio_writer *writer);
+
+    seqio_status seqio_dispose_writer(seqio_writer *writer);
+
+    seqio_status seqio_create_sequence(seqio_writer writer);
+
+    seqio_status seqio_add_metadata(seqio_writer writer,
+                                    char const *key,
+                                    char const *value);
+
+    seqio_status seqio_write(seqio_writer writer,
+                             char const *buffer,
+                             uint32_t length);
+
 
 /*!
   Dispose a buffer allocated by the internal implementation (e.g. seqio_read_all()).

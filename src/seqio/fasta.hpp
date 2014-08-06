@@ -50,8 +50,8 @@ namespace seqio {
 
             struct {
                 char buf[1024*64];
-                uint16_t len;
-                uint16_t index;
+                uint32_t len;
+                uint32_t index;
             } cache;
 
             struct {
@@ -106,9 +106,9 @@ namespace seqio {
             FastaMetadata(std::string name, std::string comment);
             virtual ~FastaMetadata();
 
-            virtual uint32_t getKeyCount() const;
-            virtual char const *getKey(uint32_t key_index) const;
-            virtual char const *getValue(char const *key) const;
+            virtual uint32_t getKeyCount() const override;
+            virtual char const *getKey(uint32_t key_index) const override;
+            virtual char const *getValue(char const *key) const override;
 
         private:
             std::string name;
@@ -128,9 +128,9 @@ namespace seqio {
                           std::function<void (FastaSequence *sequence)> onClose_);
             virtual ~FastaSequence();
 
-            virtual IMetadata const &getMetadata();
+            virtual IMetadata const &getMetadata() override;
             virtual uint32_t read(char *buffer,
-                                  uint32_t buffer_length);
+                                  uint32_t buffer_length) override;
             z_off_t tellEnd();
 
         private:
@@ -179,56 +179,33 @@ namespace seqio {
 
 /**********************************************************************
  *
- * OBSOLETE
+ * CLASS FastaWriter
  *
  **********************************************************************/
-        struct FastaSequenceDesc {
-            std::string name;
-            std::string comment;
-        };
-
-        class FastaReader {
+        class FastaWriter : public IWriter {
         public:
-            enum Translate {
-                Translate_None,
-                Translate_Caps_GATCN
-            };
+            FastaWriter(char const *path,
+                        seqio_file_format file_format);
+            virtual ~FastaWriter();
 
-            FastaReader(const char *path, Translate translate = Translate_None);
-            ~FastaReader();
-
-            bool nextSequence(FastaSequenceDesc &desc);
-            uint32_t read(char *buf, uint32_t buflen);
-            void close();
+            virtual void createSequence() override;
+            virtual void addMetadata(char const *key,
+                                     char const *value) override;
+            virtual void write(char const *buffer,
+                               uint32_t length) override;
 
         private:
-            struct CharActionEntry {
-                enum Action {
-                    IGNORE,
-                    NEWLINE,
-                    APPEND,
-                    HEADER
-                };
+            void writeMetadata();
 
-                Action firstCol;
-                Action otherCol;
-                char c;
-            } actions[256];
+            std::function<void (char const *buffer, uint32_t length)> doWrite;
+            std::function<void ()> doClose;
 
-            void initActions(Translate translate);
-
-            int nextChar();
             enum {
-                INIT, SEQ, HEADER, END
-            } state = INIT;
-            bool firstCol = true;
-            struct {
-                char buf[1024*4];
-                uint16_t len = 0;
-                uint16_t index = 0;
-            } cache;
-            gzFile f;
+                INIT, META, BASES
+            } state;
+            std::string name;
+            std::string comment;
+            int column;
         };
-
     }
 }

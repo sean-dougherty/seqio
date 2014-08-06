@@ -41,6 +41,17 @@ namespace seqio {
             virtual ISequence *nextSequence() = 0;
         };
 
+        class IWriter {
+        public:
+            virtual ~IWriter() {}
+
+            virtual void createSequence() = 0;
+            virtual void addMetadata(char const *key,
+                                     char const *value) = 0;
+            virtual void write(char const *buffer,
+                               uint32_t length) = 0;
+        };
+
     }
 }
 
@@ -61,6 +72,10 @@ namespace seqio {
 
 #define raise_oom(MSG...) {                      \
         raise(OUT_OF_MEMORY, MSG);               \
+    }
+
+#define raise_state(MSG...) {                    \
+        raise(INVALID_STATE, MSG);               \
     }
 
 #define implement() {                                                   \
