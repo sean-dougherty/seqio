@@ -20,7 +20,7 @@ target_test=bld/bin/test
 
 target_doc=bld/doc/api/html/index.html
 
-public_inc=$(shell ls src/seqio/*.h)
+public_inc=$(shell ls src/seqio/seqio.h)
 
 
 .PHONY: all clean doc lib test fasta pna
