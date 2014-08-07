@@ -1,5 +1,5 @@
-#include "fasta.h"
 #include "pna.h"
+#include "seqio.h"
 #include "util.h"
 
 #include <string.h>
@@ -9,19 +9,18 @@
 #include <vector>
 
 using namespace std;
-using namespace seqio;
+using namespace seqio::pna;
 
 shared_ptr<PnaWriter> create_writer(const string &path);
-void write_seq(FastaReader &reader,
-               FastaSequenceDesc &seq, // todo: keep "current seq" in reader
-               const string &path_fasta, // todo: put this and index in the desc
+void write_seq(seqio_sequence sequence,
+               const string &path_fasta,
                int index_fasta,
                shared_ptr<PnaWriter> fwriter);
 void create_file_metadata(shared_ptr<PnaWriter> fwriter);
 void create_seq_metadata(shared_ptr<PnaSequenceWriter> writer,
                          const string &path_fasta,
                          int index_fasta,
-                         FastaSequenceDesc &seq);
+                         seqio_sequence sequence);
 bool parse_ncbi_name(const string &name, map<string, string> &result);
 bool parse_ncbi_comment(const string &comment, map<string, string> &result);
 
@@ -49,6 +48,9 @@ int main(int argc, const char **argv) {
     int argi = 1;
     string mode = argv[argi++];
 
+    seqio_sequence_options fasta_options = SEQIO_DEFAULT_SEQUENCE_OPTIONS;
+    fasta_options.base_transform = SEQIO_BASE_TRANSFORM_CAPS_GATCN;
+
     if((mode == "a") || (mode == "assemble")) {
         if((argc - argi) < 2) {
             usage("Missing assemble arguments");
@@ -61,16 +63,25 @@ int main(int argc, const char **argv) {
             string path_fasta = argv[argi];
 
             cout << "Processing " << path_fasta << "..." << endl;
-            
-            FastaReader reader(path_fasta.c_str(),
-                               FastaReader::Translate_Caps_GATCN);
-            FastaSequenceDesc seq;
-            for(int iseq = 0; reader.nextSequence(seq); iseq++) {
+
+            seqio_sequence_iterator iterator;
+            seqio_create_sequence_iterator(path_fasta.c_str(),
+                                           fasta_options,
+                                           &iterator);
+            seqio_sequence sequence;
+            for(int iseq = 0;
+                (0 == seqio_next_sequence(iterator, &sequence)) && sequence;
+                iseq++) {
+
+                char const *name, *comment;
+                seqio_get_value(sequence, SEQIO_KEY_NAME, &name);
+                seqio_get_value(sequence, SEQIO_KEY_COMMENT, &comment);
+
                 map<string,string> attrs;
-                errif(!parse_ncbi_comment(seq.comment, attrs),
+                errif(!parse_ncbi_comment(comment, attrs),
                       "Cannot determine assembly of %s in %s\n"
                       "comment=%s",
-                      seq.name.c_str(), path_fasta.c_str(), seq.comment.c_str());
+                      name, path_fasta.c_str(), comment);
 
                 string assembly = join(split(attrs["assembly"]), "-");
                 string species = join(split(attrs["species"]), "_");
@@ -81,9 +92,10 @@ int main(int argc, const char **argv) {
                     fwriters[path_assembly] = fwriter;
                 }
 
-                write_seq(reader, seq, path_fasta, iseq, fwriter);
+                write_seq(sequence, path_fasta, iseq, fwriter);
             }
         }
+#if false
     } else if((mode == "c") || (mode == "create")) {
         if((argc - argi) < 2) {
             usage("Missing create arguments");
@@ -417,6 +429,7 @@ int main(int argc, const char **argv) {
         }
     } else {
         usage("Invalid mode: '"+mode+"'");
+#endif
     }
     
     return 0;
@@ -428,17 +441,19 @@ shared_ptr<PnaWriter> create_writer(const string &path) {
     return fwriter;
 }
 
-void write_seq(FastaReader &reader,
-               FastaSequenceDesc &seq,
+void write_seq(seqio_sequence sequence,
                const string &path_fasta,
                int index_fasta,
                shared_ptr<PnaWriter> fwriter) {
     shared_ptr<PnaSequenceWriter> writer = fwriter->createSequence();
 
     char buf[1024 * 4];
-    uint32_t rc;
-    while( 0 != (rc = reader.read(buf, sizeof(buf))) ) {
-        writer->write(buf, rc);
+    uint32_t readlen;
+    
+    while( (0 == seqio_read(sequence, buf, sizeof(buf), &readlen))
+           && readlen ) {
+
+        writer->write(buf, readlen);
     }
 
     create_seq_metadata(writer, path_fasta, index_fasta, seq);
@@ -501,7 +516,7 @@ void create_file_metadata(shared_ptr<PnaWriter> fwriter) {
 void create_seq_metadata(shared_ptr<PnaSequenceWriter> writer,
                          const string &path_fasta,
                          int index_fasta,
-                         FastaSequenceDesc &seq) {
+                         seqio_sequence sequence) {
     char strbuf[1024];
 
     sprintf(strbuf, "%d", index_fasta);
