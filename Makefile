@@ -25,7 +25,8 @@ public_inc=$(shell ls src/seqio/*.h)
 
 .PHONY: all clean doc lib test fasta pna
 
-all: $(target_seqio) $(target_pna) $(target_fasta)
+all: lib fasta pna test
+
 lib: $(target_seqio)
 fasta: $(target_fasta)
 pna: $(target_pna)

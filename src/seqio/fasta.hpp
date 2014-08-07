@@ -134,8 +134,8 @@ namespace seqio {
             virtual ~FastaSequence();
 
             virtual IConstDictionary const &getMetadata() override;
-            virtual uint32_t read(char *buffer,
-                                  uint32_t buffer_length) override;
+            virtual uint64_t read(char *buffer,
+                                  uint64_t buffer_length) override;
             z_off_t tellEnd();
 
         private:
@@ -195,12 +195,12 @@ namespace seqio {
 
             virtual void createSequence(IConstDictionary const *metadata) override;
             virtual void write(char const *buffer,
-                               uint32_t length) override;
+                               uint64_t length) override;
 
         private:
             void writeMetadata();
 
-            std::function<void (char const *buffer, uint32_t length)> doWrite;
+            std::function<void (char const *buffer, uint64_t length)> doWrite;
             std::function<void ()> doClose;
 
             bool inSequence;

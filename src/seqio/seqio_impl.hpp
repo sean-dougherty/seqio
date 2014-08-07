@@ -46,8 +46,8 @@ namespace seqio {
             virtual ~ISequence() {}
 
             virtual IConstDictionary const &getMetadata() = 0;
-            virtual uint32_t read(char *buffer,
-                                  uint32_t buffer_length) = 0;
+            virtual uint64_t read(char *buffer,
+                                  uint64_t buffer_length) = 0;
         };
 
         class ISequenceIterator {
@@ -63,7 +63,7 @@ namespace seqio {
 
             virtual void createSequence(IConstDictionary const *metadata) = 0;
             virtual void write(char const *buffer,
-                               uint32_t length) = 0;
+                               uint64_t length) = 0;
         };
     }
 }

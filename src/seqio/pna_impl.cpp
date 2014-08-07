@@ -74,8 +74,8 @@ IConstDictionary const &PnaSequence::getMetadata() {
     return metadata;
 }
 
-uint32_t PnaSequence::read(char *buffer,
-                           uint32_t buffer_length) {
+uint64_t PnaSequence::read(char *buffer,
+                           uint64_t buffer_length) {
     return reader->read(buffer, buffer_length);
 }
 
@@ -123,6 +123,6 @@ void PnaWriter::createSequence(IConstDictionary const *metadata) {
 }
 
 void PnaWriter::write(char const *buffer,
-                      uint32_t length) {
+                      uint64_t length) {
     sequence->write(buffer, length);
 }

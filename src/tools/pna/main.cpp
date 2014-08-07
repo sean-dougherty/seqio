@@ -241,7 +241,7 @@ int main(int argc, const char **argv) {
 
                     uint64_t fastaLen = 0;
                     uint64_t pnaLen = 0;
-                    uint32_t fastaRc;
+                    uint64_t fastaRc;
                     uint64_t pnaRc;
                     char fastaBuf[buflen];
                     char pnaBuf[buflen];
@@ -286,7 +286,7 @@ int main(int argc, const char **argv) {
                         }
 
                         char fastaBuf[4*1024];
-                        uint32_t fastaRc;
+                        uint64_t fastaRc;
                         seqio_read(sequence, fastaBuf, sizeof(fastaBuf), &fastaRc);
                         if(fastaRc == 0)
                             break;
@@ -462,7 +462,7 @@ void write_seq(seqio_sequence sequence,
     shared_ptr<PnaSequenceWriter> writer = fwriter->createSequence();
 
     char buf[1024 * 4];
-    uint32_t readlen;
+    uint64_t readlen;
     
     while( (0 == seqio_read(sequence, buf, sizeof(buf), &readlen))
            && readlen ) {

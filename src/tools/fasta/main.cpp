@@ -64,7 +64,7 @@ int main(int argc, const char **argv) {
     }
 
     char *buf = nullptr;
-    uint32_t buflen;
+    uint64_t buflen;
 
     string mode = argv[argi++];
     if((mode == "validate") || (mode == "v")) {
@@ -107,7 +107,7 @@ int main(int argc, const char **argv) {
 
                 cout << "  " << name << " " << comment << endl;
 
-                uint32_t seqlen;
+                uint64_t seqlen;
                 seqio_read_all(sequence, &buf, &buflen, &seqlen);
 
                 errif(seqlen != kseq->seq.l,
@@ -131,7 +131,7 @@ int main(int argc, const char **argv) {
         cout << "SUCCESSFULL FASTA VALIDATION." << endl; 
     } else if(mode == "cat" || mode == "read") {
         char *buf = nullptr;
-        uint32_t buflen;
+        uint64_t buflen;
 
         for(; argi < argc; argi++) {
             const char *path = argv[argi];
@@ -141,7 +141,7 @@ int main(int argc, const char **argv) {
             seqio_create_sequence_iterator(path, opts, &iterator);
 
             while( (0 == seqio_next_sequence(iterator, &sequence)) && sequence) {
-                uint32_t seqlen;
+                uint64_t seqlen;
                 seqio_read_all(sequence, &buf, &buflen, &seqlen);
                 
                 if(mode == "cat") {
@@ -178,7 +178,7 @@ int main(int argc, const char **argv) {
             seqio_get_value(metadata, SEQIO_KEY_NAME, &name);
             seqio_get_value(metadata, SEQIO_KEY_COMMENT, &comment);
 
-            uint32_t seqlen;
+            uint64_t seqlen;
             seqio_read_all(sequence, &buf, &buflen, &seqlen);
 
             boost::filesystem::path path_out = path_outdir / (string(name) + ".fa");

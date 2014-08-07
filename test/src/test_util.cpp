@@ -33,14 +33,14 @@ int open_count(char const *path) {
     return fd_counter;
 }
 
-char *create_random_bases(uint32_t len, int seed) {
+char *create_random_bases(uint64_t len, int seed) {
     char *seq = (char *)malloc(len + 1);
     char bases[] = {'A','T','G','C'};
     
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> dist(0, 3);
 
-    for(uint32_t i = 0; i < len; i++) {
+    for(uint64_t i = 0; i < len; i++) {
         seq[i] = bases[dist(generator)];
     }
     seq[len] = 0;
@@ -85,17 +85,17 @@ void verify_basic_metadata(seqio_sequence sequence, char const *name, char const
     }
 }
 
-void verify_bases(seqio_sequence sequence, char const *expected, uint32_t buflen) {
-    uint32_t seqlen = strlen(expected);
+void verify_bases(seqio_sequence sequence, char const *expected, uint64_t buflen) {
+    uint64_t seqlen = strlen(expected);
     char *buf = (char *)malloc(seqlen+1);
     memset(buf, 0, seqlen+1);
 
-    uint32_t total_read_length = 0;
-    uint32_t read_length;
+    uint64_t total_read_length = 0;
+    uint64_t read_length;
     while( (seqio_read(sequence, buf + total_read_length, buflen, &read_length) == SEQIO_SUCCESS)
            && (read_length > 0) ) {
 
-        for(uint32_t i = total_read_length; i < total_read_length + read_length; i++) {
+        for(uint64_t i = total_read_length; i < total_read_length + read_length; i++) {
             assert(buf[i] == expected[i]);
         }
 
@@ -190,7 +190,7 @@ void verify_a__out_of_order(char const *path) {
     verify_sequence(sequences[0], "seq1", "comment1.0 comment1.1", "aAgGcCtT");
 }
 
-void verify_read_all(uint32_t seqlen) {
+void verify_read_all(uint64_t seqlen) {
     char *seq = create_random_bases(seqlen);
 
     {
@@ -222,8 +222,8 @@ void verify_read_all(uint32_t seqlen) {
         seqio_next_sequence(iterator, &sequence);
         
         char *buffer = nullptr;
-        uint32_t buffer_length;
-        uint32_t read_length;
+        uint64_t buffer_length;
+        uint64_t read_length;
         
         seqio_read_all(sequence, &buffer, &buffer_length, &read_length);
 
@@ -239,7 +239,7 @@ void verify_read_all(uint32_t seqlen) {
 }
 
 void verify_write(seqio_file_format file_format, char const *path) {
-    uint32_t const seqlen = 1024 * 1024 * 16;
+    uint64_t const seqlen = 1024 * 1024 * 16;
     char *seq = create_random_bases(seqlen);
 
     {

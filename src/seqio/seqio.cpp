@@ -163,14 +163,14 @@ seqio_status seqio_get_metadata(seqio_sequence sequence,
 
 seqio_status seqio_read(seqio_sequence sequence,
                         char *buffer,
-                        uint32_t buffer_length,
-                        uint32_t *read_length) {
+                        uint64_t buffer_length,
+                        uint64_t *read_length) {
     check_null(sequence);
     check_null(buffer);
     check_null(read_length);
 
     try {
-        uint32_t n = ((ISequence *)sequence)->read(buffer, buffer_length);
+        uint64_t n = ((ISequence *)sequence)->read(buffer, buffer_length);
         *read_length = n;
     } catch(Exception x) {
         return err_handler(x.err_info);
@@ -181,8 +181,8 @@ seqio_status seqio_read(seqio_sequence sequence,
 
 seqio_status seqio_read_all(seqio_sequence sequence,
                             char **buffer,
-                            uint32_t *buffer_length,
-                            uint32_t *read_length) {
+                            uint64_t *buffer_length,
+                            uint64_t *read_length) {
     check_null(sequence);
     check_null(buffer);
     check_null(buffer_length);
@@ -198,7 +198,7 @@ seqio_status seqio_read_all(seqio_sequence sequence,
                 raise_oom("Cannot allocate %zu bytes", size_t(*buffer_length));
         }
 
-        auto grow_to = [=] (uint32_t new_length) {
+        auto grow_to = [=] (uint64_t new_length) {
             char *buffer_ = (char *)realloc(*buffer, new_length);
             if(buffer_ == nullptr) {
                 raise_oom("Cannot allocate %zu bytes", size_t(new_length));
@@ -207,8 +207,8 @@ seqio_status seqio_read_all(seqio_sequence sequence,
             *buffer_length = new_length;
         };
 
-        uint32_t nread;
-        uint32_t nread_total = 0;
+        uint64_t nread;
+        uint64_t nread_total = 0;
 
         while( (nread = iseq->read(*buffer + nread_total, *buffer_length - nread_total)) != 0) {
             nread_total += nread;
@@ -301,7 +301,7 @@ seqio_status seqio_create_sequence(seqio_writer writer,
 
 seqio_status seqio_write(seqio_writer writer,
                          char const *buffer,
-                         uint32_t length) {
+                         uint64_t length) {
    check_null(writer);
    check_null(buffer);
 

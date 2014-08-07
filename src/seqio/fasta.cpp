@@ -9,7 +9,7 @@ using std::string;
 using std::vector;
 using namespace seqio::impl;
 
-#define NCOLUMNS uint32_t(80)
+#define NCOLUMNS uint64_t(80)
 
 namespace seqio {
     namespace impl {
@@ -268,12 +268,12 @@ IConstDictionary const &FastaSequence::getMetadata() {
     return metadata;
 }
 
-uint32_t FastaSequence::read(char *buffer,
-                             uint32_t buffer_length) {
+uint64_t FastaSequence::read(char *buffer,
+                             uint64_t buffer_length) {
     if(parse.eos)
         return 0;
 
-    uint32_t n = 0;
+    uint64_t n = 0;
     int c;
 
     while((n < buffer_length) && (c = stream->nextChar()) != -1) {
@@ -486,13 +486,13 @@ void FastaWriter::createSequence(IConstDictionary const *metadata) {
 }
 
 void FastaWriter::write(char const *buffer,
-                        uint32_t length) {
+                        uint64_t length) {
     if(!inSequence) {
         raise_state("Must create sequence");
     }
 
     while(length > 0) {
-        uint32_t write_length = std::min(NCOLUMNS - column, length);
+        uint64_t write_length = std::min(NCOLUMNS - column, length);
         doWrite(buffer, write_length);
         doWrite("\n", 1);
         

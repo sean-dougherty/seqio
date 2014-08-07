@@ -39,8 +39,8 @@ namespace seqio {
             virtual ~PnaSequence();
 
             virtual IConstDictionary const &getMetadata() override;
-            virtual uint32_t read(char *buffer,
-                                  uint32_t buffer_length) override;
+            virtual uint64_t read(char *buffer,
+                                  uint64_t buffer_length) override;
 
         private:
             std::shared_ptr<pna::PnaSequenceReader> reader;
@@ -78,7 +78,7 @@ namespace seqio {
 
             virtual void createSequence(IConstDictionary const *metadata) override;
             virtual void write(char const *buffer,
-                               uint32_t length) override;
+                               uint64_t length) override;
 
         private:
             std::shared_ptr<pna::PnaWriter> writer;

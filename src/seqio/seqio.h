@@ -73,8 +73,7 @@ typedef enum {
     SEQIO_ERR_INVALID_STATE = 2, 
     SEQIO_ERR_FILE_NOT_FOUND = 3,
     SEQIO_ERR_IO = 4,
-    SEQIO_ERR_KEY_NOT_FOUND = 5,
-    SEQIO_ERR_OUT_OF_MEMORY = 6
+    SEQIO_ERR_OUT_OF_MEMORY = 5
 } seqio_status;
 
 /*!
@@ -260,8 +259,8 @@ seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
  */
     seqio_status seqio_read(seqio_sequence sequence,
                             char *buffer,
-                            uint32_t buffer_length,
-                            uint32_t *read_length);
+                            uint64_t buffer_length,
+                            uint64_t *read_length);
 
 /*!
   Read entirety of sequence, allocating buffer on client's behalf. If some portion of the
@@ -300,8 +299,8 @@ seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
  */
     seqio_status seqio_read_all(seqio_sequence sequence,
                                 char **buffer,
-                                uint32_t *buffer_length,
-                                uint32_t *read_length);
+                                uint64_t *buffer_length,
+                                uint64_t *read_length);
 
     seqio_status seqio_create_writer(char const *path,
                                      seqio_writer_options options,
@@ -314,7 +313,7 @@ seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
 
     seqio_status seqio_write(seqio_writer writer,
                              char const *buffer,
-                             uint32_t length);
+                             uint64_t length);
 
     seqio_status seqio_create_dictionary(seqio_dictionary *dict);
 

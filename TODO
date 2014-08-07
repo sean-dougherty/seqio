@@ -13,10 +13,9 @@ x port cli tools to use c api
    x fasta
    x pna
 
-- use uint64_t for read
+x use uint64_t for read
 
 *** TEST ***
-- partial read of fasta sequence, followed by iteration.
 x get_key, get_value
 x set_err_handler (return)
 
