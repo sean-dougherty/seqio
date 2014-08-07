@@ -210,8 +210,14 @@ FastaMetadata::FastaMetadata(string name_, string comment_)
 FastaMetadata::~FastaMetadata() {
 }
 
+bool FastaMetadata::hasKey(char const *key) const {
+    return (0 == strcmp(key, SEQIO_KEY_NAME))
+        || (0 == strcmp(key, SEQIO_KEY_COMMENT));
+            
+}
+
 uint32_t FastaMetadata::getKeyCount() const {
-    return 1;
+    return 2;
 }
 
 char const *FastaMetadata::getKey(uint32_t key_index) const {
@@ -431,7 +437,7 @@ void FastaSequenceIterator::Callback::iteratorClosing() {
 
 FastaWriter::FastaWriter(char const *path,
                          seqio_file_format file_format) {
-    state = INIT;
+    inSequence = false;
 
     switch(file_format) {
     case SEQIO_FILE_FORMAT_FASTA: {
@@ -469,52 +475,20 @@ FastaWriter::~FastaWriter() {
     doClose();
 }
 
-void FastaWriter::createSequence() {
-    switch(state) {
-    case INIT:
-    case BASES:
-        state = META;
-        name = "";
-        comment = "";
-        column = 0;
-        break;
-    case META:
-        raise_state("No bases written");
-    }
-}
+void FastaWriter::createSequence(IConstDictionary const *metadata) {
+    name = metadata->getValue(SEQIO_KEY_NAME);
+    if(metadata->hasKey(SEQIO_KEY_COMMENT))
+        comment = metadata->getValue(SEQIO_KEY_COMMENT);
 
-void FastaWriter::addMetadata(char const *key,
-                              char const *value) {
-    switch(state) {
-    case INIT:
-        raise_state("Must create sequence.");
-    case META: {
-        if(0 == strcmp(key, SEQIO_KEY_NAME)) {
-            name = value;
-        } else if(0 == strcmp(key, SEQIO_KEY_COMMENT)) {
-            comment = value;
-        } else {
-            raise_parm("Invalid FASTA key: '%s'", key);
-        }
-    } break;
-    case BASES:
-        raise_state("Cannot alter metadata once bases have been written.");
-        break;
-    }
+    inSequence = true;
+    writeMetadata();
+    column = 0;
 }
 
 void FastaWriter::write(char const *buffer,
                         uint32_t length) {
-    switch(state) {
-    case INIT:
+    if(!inSequence) {
         raise_state("Must create sequence");
-    case META:
-        writeMetadata();
-        state = BASES;
-        break;
-    case BASES:
-        // no-op
-        break;
     }
 
     while(length > 0) {

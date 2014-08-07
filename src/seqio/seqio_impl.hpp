@@ -3,6 +3,9 @@
 #include "seqio.h"
 
 #include <cstdio>
+#include <cstdlib>
+
+#define SEQIO_ABORT_ON_EXCEPTION
 
 namespace seqio {
     namespace impl {
@@ -13,6 +16,10 @@ namespace seqio {
 
             Exception(seqio_err_info err_info_) 
                 : err_info(err_info_) {
+
+#ifdef SEQIO_ABORT_ON_EXCEPTION
+                abort();
+#endif
             }
         };
 
@@ -20,9 +27,18 @@ namespace seqio {
         public:
             virtual ~IConstDictionary() {}
 
+            virtual bool hasKey(char const *key) const = 0;
             virtual uint32_t getKeyCount() const = 0;
             virtual char const *getKey(uint32_t key_index) const = 0;
             virtual char const *getValue(char const *key) const = 0;
+        };
+
+        class IDictionary : public IConstDictionary {
+        public:
+            virtual ~IDictionary() {}
+
+            virtual void setValue(char const *key, char const *value) = 0;
+            virtual void clear() = 0;
         };
 
         class ISequence {
@@ -45,13 +61,10 @@ namespace seqio {
         public:
             virtual ~IWriter() {}
 
-            virtual void createSequence() = 0;
-            virtual void addMetadata(char const *key,
-                                     char const *value) = 0;
+            virtual void createSequence(IConstDictionary const *metadata) = 0;
             virtual void write(char const *buffer,
                                uint32_t length) = 0;
         };
-
     }
 }
 

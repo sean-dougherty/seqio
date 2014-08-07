@@ -299,20 +299,25 @@ seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
 
     seqio_status seqio_dispose_writer(seqio_writer *writer);
 
-    seqio_status seqio_create_sequence(seqio_writer writer);
-
-    seqio_status seqio_add_metadata(seqio_writer writer,
-                                    char const *key,
-                                    char const *value);
+    seqio_status seqio_create_sequence(seqio_writer writer,
+                                       seqio_const_dictionary metadata);
 
     seqio_status seqio_write(seqio_writer writer,
                              char const *buffer,
                              uint32_t length);
 
-/*
+    seqio_status seqio_create_dictionary(seqio_dictionary *dict);
+
+    seqio_status seqio_dispose_dictionary(seqio_dictionary *dict);
+
+    seqio_status seqio_set_value(seqio_dictionary dict,
+                                 char const *key,
+                                 char const *value);
+
+    seqio_status seqio_clear(seqio_dictionary dict);
+
     seqio_status seqio_has_key(seqio_const_dictionary dict,
                                seqio_bool *has_key);
-*/
 
     seqio_status seqio_get_key_count(seqio_const_dictionary dict,
                                      uint32_t *count);
@@ -324,10 +329,6 @@ seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
     seqio_status seqio_get_value(seqio_const_dictionary dict,
                                  char const *key,
                                  char const **value);
-
-    seqio_status seqio_set_value(seqio_dictionary dict,
-                                 char const *key,
-                                 char const *value);
 
 /*!
   Dispose a buffer allocated by the internal implementation (e.g. seqio_read_all()).

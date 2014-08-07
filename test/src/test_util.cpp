@@ -160,12 +160,16 @@ void verify_read_all(uint32_t seqlen) {
                             opts,
                             &writer);
 
-        seqio_create_sequence(writer);
-        seqio_add_metadata(writer, SEQIO_KEY_NAME, "seq1");
-        seqio_add_metadata(writer, SEQIO_KEY_COMMENT, "comment1.0 comment1.1");
+        seqio_dictionary metadata;
+        seqio_create_dictionary(&metadata);
+
+        seqio_set_value(metadata, SEQIO_KEY_NAME, "seq1");
+        seqio_set_value(metadata, SEQIO_KEY_COMMENT, "comment1.0 comment1.1");
+        seqio_create_sequence(writer, metadata);
         seqio_write(writer, seq, seqlen);
 
         seqio_dispose_writer(&writer);
+        seqio_dispose_dictionary(&metadata);
     }
 
     {
@@ -206,9 +210,12 @@ void verify_write(seqio_file_format file_format, char const *path) {
                             opts,
                             &writer);
 
-        seqio_create_sequence(writer);
-        seqio_add_metadata(writer, SEQIO_KEY_NAME, "seq1");
-        seqio_add_metadata(writer, SEQIO_KEY_COMMENT, "comment1.0 comment1.1");
+        seqio_dictionary metadata;
+        seqio_create_dictionary(&metadata);
+
+        seqio_set_value(metadata, SEQIO_KEY_NAME, "seq1");
+        seqio_set_value(metadata, SEQIO_KEY_COMMENT, "comment1.0 comment1.1");
+        seqio_create_sequence(writer, metadata);
         seqio_write(writer, seq, seqlen);
 
         seqio_dispose_writer(&writer);

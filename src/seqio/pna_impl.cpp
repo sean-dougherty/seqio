@@ -29,6 +29,10 @@ PnaMetadata::PnaMetadata(pna::PnaMetadata const &metadata_)
 PnaMetadata::~PnaMetadata() {
 }
 
+bool PnaMetadata::hasKey(char const *key) const {
+    return metadata.value(key) != nullptr;
+}
+
 uint32_t PnaMetadata::getKeyCount() const {
     return metadata.size();
 }
@@ -109,13 +113,13 @@ PnaWriter::PnaWriter(char const *path,
 PnaWriter::~PnaWriter() {
 }
 
-void PnaWriter::createSequence() {
+void PnaWriter::createSequence(IConstDictionary const *metadata) {
     sequence = writer->createSequence();
-}
-
-void PnaWriter::addMetadata(char const *key,
-                            char const *value) {
-    sequence->addMetadata(key, value);
+    for(uint32_t i = 0; i < metadata->getKeyCount(); i++) {
+        char const *key = metadata->getKey(i);
+        char const *value = metadata->getValue(key);
+        sequence->addMetadata(key, value);
+    }
 }
 
 void PnaWriter::write(char const *buffer,

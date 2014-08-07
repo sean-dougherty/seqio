@@ -5,8 +5,12 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <map>
+#include <string>
 
 using namespace seqio::impl;
+using std::map;
+using std::string;
 
 seqio_sequence_options const SEQIO_DEFAULT_SEQUENCE_OPTIONS = {
     SEQIO_FILE_FORMAT_DEDUCE,
@@ -266,27 +270,13 @@ seqio_status seqio_dispose_writer(seqio_writer *writer) {
     return SEQIO_SUCCESS;
 }
 
-seqio_status seqio_create_sequence(seqio_writer writer) {
+seqio_status seqio_create_sequence(seqio_writer writer,
+                                   seqio_const_dictionary dict) {
     check_null(writer);
+    check_null(dict);
 
     try {
-        ((IWriter *)writer)->createSequence();
-    } catch(Exception x) {
-        return err_handler(x.err_info);
-    }
-
-    return SEQIO_SUCCESS;
-}
-
-seqio_status seqio_add_metadata(seqio_writer writer,
-                                char const *key,
-                                char const *value) {
-   check_null(writer);
-   check_null(key);
-   check_null(value);
-
-    try {
-        ((IWriter *)writer)->addMetadata(key, value);
+        ((IWriter *)writer)->createSequence((IConstDictionary const *)dict);
     } catch(Exception x) {
         return err_handler(x.err_info);
     }
@@ -307,6 +297,94 @@ seqio_status seqio_write(seqio_writer writer,
     }
 
     return SEQIO_SUCCESS;
+}
+
+class Dictionary : public IDictionary {
+public:
+    virtual ~Dictionary() {}
+
+    virtual bool hasKey(char const *key) const override {
+        return dict.find(key) != dict.end();
+    }
+
+    virtual uint32_t getKeyCount() const override {
+        return dict.size();
+    }
+
+    virtual char const *getKey(uint32_t key_index) const override {
+        if(key_index >= dict.size())
+            raise_parm("Index exceeds dictionary size.");
+
+        auto it = dict.begin();
+        for(uint32_t i = 0; i < key_index; i++)
+            ++it;
+
+        return it->first.c_str();
+    }
+
+    virtual char const *getValue(char const *key) const override {
+        auto it = dict.find(key);
+        if(it == dict.end())
+            raise_parm("Unknown key: %s", key);
+
+        return it->second.c_str();
+    }
+
+    virtual void setValue(char const *key, char const *value) override {
+        dict[key] = value;
+    }
+
+    virtual void clear() override {
+        dict.clear();
+    }
+
+private:
+    map<string, string> dict;
+};
+
+seqio_status seqio_create_dictionary(seqio_dictionary *dict) {
+   check_null(dict);
+
+   *dict = (seqio_dictionary)new Dictionary();
+
+    return SEQIO_SUCCESS;
+}
+
+seqio_status seqio_dispose_dictionary(seqio_dictionary *dict) {
+    if(dict && *dict) {
+        delete (Dictionary *)*dict;
+        *dict = nullptr;
+    }
+
+    return SEQIO_SUCCESS;
+}
+
+seqio_status seqio_set_value(seqio_dictionary dict,
+                             char const *key,
+                             char const *value) {
+    check_null(dict);
+    check_null(key);
+    check_null(value);
+    
+    try {
+        ((IDictionary *)dict)->setValue(key, value);
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;        
+}
+
+seqio_status seqio_clear(seqio_dictionary dict) {
+    check_null(dict);
+
+    try {
+        ((IDictionary *)dict)->clear();
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;        
 }
 
 seqio_status seqio_get_key_count(seqio_const_dictionary dict,
@@ -354,24 +432,6 @@ seqio_status seqio_get_value(seqio_const_dictionary dict,
 
     return SEQIO_SUCCESS;        
 }
-
-/*
-seqio_status seqio_set_value(seqio_dictionary dict,
-                             char const *key,
-                             char const *value) {
-    check_null(dict);
-    check_null(key);
-    check_null(value);
-    
-    try {
-        ((IConstDictionary *)dict)->setValue(key, value);
-    } catch(Exception x) {
-        return err_handler(x.err_info);
-    }
-
-    return SEQIO_SUCCESS;        
-}
-*/
 
 seqio_status seqio_dispose_buffer(char **buffer) {
     if(buffer && *buffer) {

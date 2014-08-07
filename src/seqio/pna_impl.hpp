@@ -19,6 +19,7 @@ namespace seqio {
             PnaMetadata(pna::PnaMetadata const &metadata);
             virtual ~PnaMetadata();
 
+            virtual bool hasKey(char const *key) const override;
             virtual uint32_t getKeyCount() const override;
             virtual char const *getKey(uint32_t key_index) const override;
             virtual char const *getValue(char const *key) const override;
@@ -75,9 +76,7 @@ namespace seqio {
                       seqio_file_format file_format);
             virtual ~PnaWriter();
 
-            virtual void createSequence() override;
-            virtual void addMetadata(char const *key,
-                                     char const *value) override;
+            virtual void createSequence(IConstDictionary const *metadata) override;
             virtual void write(char const *buffer,
                                uint32_t length) override;
 
