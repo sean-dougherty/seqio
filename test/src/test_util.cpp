@@ -49,15 +49,18 @@ char *create_random_bases(uint32_t len) {
 }
 
 void verify_basic_metadata(seqio_sequence sequence, char const *name, char const *comment) {
-    {    
+    seqio_const_dictionary dict;
+    seqio_get_metadata(sequence, &dict);
+
+    {
         const char *name_;
-        seqio_get_value(sequence, SEQIO_KEY_NAME, &name_);
+        seqio_get_value(dict, SEQIO_KEY_NAME, &name_);
         assert(0 == strcmp(name, name_));
     }
 
     {    
         const char *comment_;
-        seqio_get_value(sequence, SEQIO_KEY_COMMENT, &comment_);
+        seqio_get_value(dict, SEQIO_KEY_COMMENT, &comment_);
         assert(0 == strcmp(comment_, comment));
     }
 }

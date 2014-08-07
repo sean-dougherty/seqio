@@ -66,7 +66,7 @@ PnaSequence::PnaSequence(std::shared_ptr<pna::PnaSequenceReader> reader_)
 PnaSequence::~PnaSequence() {
 }
 
-IMetadata const &PnaSequence::getMetadata() {
+IConstDictionary const &PnaSequence::getMetadata() {
     return metadata;
 }
 

@@ -89,6 +89,9 @@ typedef uint8_t seqio_bool;
 */
 typedef struct __seqio_sequence_iterator *seqio_sequence_iterator;
 
+typedef struct __seqio_dictionary *seqio_dictionary;
+typedef struct __seqio_dictionary const *seqio_const_dictionary;
+
 /*!
   Handle to an object representing a sequence, which can be used to obtain metadata
   (e.g. sequence name, comment) and sequence data.
@@ -232,43 +235,8 @@ seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
  */
     seqio_status seqio_dispose_sequence(seqio_sequence *sequence);
 
-/*!
-  Get the number of metadata keys for the sequence.
-
-  \param [in] sequence The sequence whose metadata is being queried.
-  \param [out] count Upon return, the number of keys in the sequence's metadata.
-
-  \return SEQIO_SUCCESS if successful, otherwise SEQIO_ERR_*.
- */
-    seqio_status seqio_get_key_count(seqio_sequence sequence,
-                                     uint32_t *count);
-
-/*!
-  Get the name of the key at specified index.
-
-  \param [in] sequence The sequence whose metadata is being queried.
-  \param [in] key_index Index of key being queried. Must be less than key count.
-  \param [out] key Upon return, the name of the key. Client code should not free
-               this.
-
-  \return SEQIO_SUCCESS if successful, otherwise SEQIO_ERR_*.
-*/
-    seqio_status seqio_get_key(seqio_sequence sequence,
-                               uint32_t key_index,
-                               char const **key);
-  
-/*!
-  Get a metadata value for the sequence.
-
-  \param [in] sequence The sequence whose metadata is being queried.
-  \param [in] key Name of key being queried.
-  \param [out] value Upon return, value for the key. Client code should not free this.
-
-  \return SEQIO_SUCCESS if successful, otherwise SEQIO_ERR_*.
- */
-    seqio_status seqio_get_value(seqio_sequence sequence,
-                                 char const *key,
-                                 char const **value);
+    seqio_status seqio_get_metadata(seqio_sequence sequence,
+                                    seqio_const_dictionary *dict);
 
 /*!
   Read bases from sequence.
@@ -341,6 +309,25 @@ seqio_status seqio_dispose_sequence_iterator(seqio_sequence_iterator *iterator);
                              char const *buffer,
                              uint32_t length);
 
+/*
+    seqio_status seqio_has_key(seqio_const_dictionary dict,
+                               seqio_bool *has_key);
+*/
+
+    seqio_status seqio_get_key_count(seqio_const_dictionary dict,
+                                     uint32_t *count);
+
+    seqio_status seqio_get_key(seqio_const_dictionary dict,
+                               uint32_t key_index,
+                               char const **key);
+  
+    seqio_status seqio_get_value(seqio_const_dictionary dict,
+                                 char const *key,
+                                 char const **value);
+
+    seqio_status seqio_set_value(seqio_dictionary dict,
+                                 char const *key,
+                                 char const *value);
 
 /*!
   Dispose a buffer allocated by the internal implementation (e.g. seqio_read_all()).

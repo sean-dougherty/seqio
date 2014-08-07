@@ -127,50 +127,19 @@ seqio_status seqio_dispose_sequence(seqio_sequence *sequence) {
     return SEQIO_SUCCESS;
 }
 
-seqio_status seqio_get_key_count(seqio_sequence sequence,
-                                 uint32_t *count) {
+seqio_status seqio_get_metadata(seqio_sequence sequence,
+                                seqio_const_dictionary *dict) {
     check_null(sequence);
-    check_null(count);
-    
+    check_null(dict);
+
     try {
-        *count = ((ISequence *)sequence)->getMetadata().getKeyCount();
+        ISequence *iseq = (ISequence *)sequence;
+        *dict = (seqio_const_dictionary)&iseq->getMetadata();
     } catch(Exception x) {
         return err_handler(x.err_info);
     }
 
-    return SEQIO_SUCCESS;        
-}
-
-seqio_status seqio_get_key(seqio_sequence sequence,
-                           uint32_t key_index,
-                           char const **key) {
-    check_null(sequence);
-    check_null(key);
-    
-    try {
-        *key = ((ISequence *)sequence)->getMetadata().getKey(key_index);
-    } catch(Exception x) {
-        return err_handler(x.err_info);
-    }
-
-    return SEQIO_SUCCESS;        
-}
-
-
-seqio_status seqio_get_value(seqio_sequence sequence,
-                             char const *key,
-                             char const **value) {
-    check_null(sequence);
-    check_null(key);
-    check_null(value);
-    
-    try {
-        *value = ((ISequence *)sequence)->getMetadata().getValue(key);
-    } catch(Exception x) {
-        return err_handler(x.err_info);
-    }
-
-    return SEQIO_SUCCESS;        
+    return SEQIO_SUCCESS;
 }
 
 seqio_status seqio_read(seqio_sequence sequence,
@@ -339,6 +308,70 @@ seqio_status seqio_write(seqio_writer writer,
 
     return SEQIO_SUCCESS;
 }
+
+seqio_status seqio_get_key_count(seqio_const_dictionary dict,
+                                 uint32_t *count) {
+    check_null(dict);
+    check_null(count);
+    
+    try {
+        *count = ((IConstDictionary const *)dict)->getKeyCount();
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;        
+}
+
+seqio_status seqio_get_key(seqio_const_dictionary dict,
+                           uint32_t key_index,
+                           char const **key) {
+    check_null(dict);
+    check_null(key);
+    
+    try {
+        *key = ((IConstDictionary const *)dict)->getKey(key_index);
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;        
+}
+
+
+seqio_status seqio_get_value(seqio_const_dictionary dict,
+                             char const *key,
+                             char const **value) {
+    check_null(dict);
+    check_null(key);
+    check_null(value);
+    
+    try {
+        *value = ((IConstDictionary const *)dict)->getValue(key);
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;        
+}
+
+/*
+seqio_status seqio_set_value(seqio_dictionary dict,
+                             char const *key,
+                             char const *value) {
+    check_null(dict);
+    check_null(key);
+    check_null(value);
+    
+    try {
+        ((IConstDictionary *)dict)->setValue(key, value);
+    } catch(Exception x) {
+        return err_handler(x.err_info);
+    }
+
+    return SEQIO_SUCCESS;        
+}
+*/
 
 seqio_status seqio_dispose_buffer(char **buffer) {
     if(buffer && *buffer) {

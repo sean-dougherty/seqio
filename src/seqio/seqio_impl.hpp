@@ -16,9 +16,9 @@ namespace seqio {
             }
         };
 
-        class IMetadata {
+        class IConstDictionary {
         public:
-            virtual ~IMetadata() {}
+            virtual ~IConstDictionary() {}
 
             virtual uint32_t getKeyCount() const = 0;
             virtual char const *getKey(uint32_t key_index) const = 0;
@@ -29,7 +29,7 @@ namespace seqio {
         public:
             virtual ~ISequence() {}
 
-            virtual IMetadata const &getMetadata() = 0;
+            virtual IConstDictionary const &getMetadata() = 0;
             virtual uint32_t read(char *buffer,
                                   uint32_t buffer_length) = 0;
         };

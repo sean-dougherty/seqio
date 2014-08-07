@@ -14,7 +14,7 @@ namespace seqio {
  * CLASS PnaMetadata
  *
  **********************************************************************/
-        class PnaMetadata : public IMetadata {
+        class PnaMetadata : public IConstDictionary {
         public:
             PnaMetadata(pna::PnaMetadata const &metadata);
             virtual ~PnaMetadata();
@@ -37,7 +37,7 @@ namespace seqio {
             PnaSequence(std::shared_ptr<pna::PnaSequenceReader> reader_);
             virtual ~PnaSequence();
 
-            virtual IMetadata const &getMetadata() override;
+            virtual IConstDictionary const &getMetadata() override;
             virtual uint32_t read(char *buffer,
                                   uint32_t buffer_length) override;
 

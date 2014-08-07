@@ -258,7 +258,7 @@ FastaSequence::~FastaSequence() {
     delete stream;
 }
 
-IMetadata const &FastaSequence::getMetadata() {
+IConstDictionary const &FastaSequence::getMetadata() {
     return metadata;
 }
 

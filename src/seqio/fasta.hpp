@@ -105,7 +105,7 @@ namespace seqio {
  * CLASS FastaMetadata
  *
  **********************************************************************/
-        class FastaMetadata : public IMetadata {
+        class FastaMetadata : public IConstDictionary {
         public:
             FastaMetadata(std::string name, std::string comment);
             virtual ~FastaMetadata();
@@ -132,7 +132,7 @@ namespace seqio {
                           std::function<void (FastaSequence *sequence)> onClose_);
             virtual ~FastaSequence();
 
-            virtual IMetadata const &getMetadata() override;
+            virtual IConstDictionary const &getMetadata() override;
             virtual uint32_t read(char *buffer,
                                   uint32_t buffer_length) override;
             z_off_t tellEnd();
