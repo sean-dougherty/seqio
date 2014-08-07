@@ -48,6 +48,26 @@ char *create_random_bases(uint32_t len) {
     return seq;
 }
 
+void write_file(char const *path,
+                char const *name,
+                char const *comment,
+                char const *bases) {
+    seqio_writer writer;
+    seqio_create_writer(path,
+                        SEQIO_DEFAULT_WRITER_OPTIONS,
+                        &writer);
+
+    seqio_dictionary metadata;
+    seqio_create_dictionary(&metadata);
+    seqio_set_value(metadata, SEQIO_KEY_NAME, name);
+    seqio_set_value(metadata, SEQIO_KEY_COMMENT, comment);
+
+    seqio_create_sequence(writer, metadata);
+    seqio_write(writer, bases, strlen(bases));
+
+    seqio_dispose_writer(&writer);
+}
+
 void verify_basic_metadata(seqio_sequence sequence, char const *name, char const *comment) {
     seqio_const_dictionary dict;
     seqio_get_metadata(sequence, &dict);
@@ -90,6 +110,26 @@ void verify_bases(seqio_sequence sequence, char const *expected, uint32_t buflen
     assert(read_length == 0);
 
     free(buf);
+}
+
+void verify_sequence(char const *path,
+                     seqio_base_transform base_transform,
+                     char const *name,
+                     char const *comment,
+                     char const *bases) {
+    seqio_sequence_options options = SEQIO_DEFAULT_SEQUENCE_OPTIONS;
+    options.base_transform = base_transform;
+
+    seqio_sequence_iterator iterator;
+    seqio_create_sequence_iterator(path,
+                                   options,
+                                   &iterator);
+
+    {
+        seqio_sequence sequence;
+        seqio_next_sequence(iterator, &sequence);
+        verify_sequence(sequence, name, comment, bases);
+    }
 }
 
 void verify_sequence(seqio_sequence sequence,
@@ -199,7 +239,6 @@ void verify_read_all(uint32_t seqlen) {
 }
 
 void verify_write(seqio_file_format file_format, char const *path) {
-    seqio_set_err_handler(SEQIO_ERR_HANDLER_ABORT);
     uint32_t const seqlen = 1024 * 1024 * 16;
     char *seq = create_random_bases(seqlen);
 

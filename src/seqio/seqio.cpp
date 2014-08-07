@@ -8,6 +8,10 @@
 #include <map>
 #include <string>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 using namespace seqio::impl;
 using std::map;
 using std::string;
@@ -40,6 +44,10 @@ static seqio_err_handler err_handler = SEQIO_ERR_HANDLER_ABORT;
         err(INVALID_PARAMETER, MSG);                        \
     }
 
+#define err_fnf(MSG...) {                                   \
+        err(FILE_NOT_FOUND, MSG);                           \
+    }
+
 #define check_null(PARAMETER) {                             \
         if((PARAMETER) == nullptr) {                        \
             err_parm(#PARAMETER " is null");                \
@@ -59,6 +67,13 @@ seqio_status seqio_create_sequence_iterator(char const *path,
                                             seqio_sequence_iterator *iterator) {
     check_null(path);
     check_null(iterator);
+
+    {
+        struct stat buf;
+        if(0 != stat(path, &buf)) {
+            err_fnf("No such file: %s", path);
+        }
+    }
 
     ISequenceIterator *impl;
 

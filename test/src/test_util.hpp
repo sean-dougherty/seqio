@@ -8,9 +8,18 @@
 
 int open_count(char const *path);
 char *create_random_bases(uint32_t len);
+void write_file(char const *path,
+                char const *name,
+                char const *comment,
+                char const *bases);
 
 void verify_basic_metadata(seqio_sequence sequence, char const *name, char const *comment);
 void verify_bases(seqio_sequence sequence, char const *expected, uint32_t buflen);
+void verify_sequence(char const *path,
+                     seqio_base_transform base_transform,
+                     char const *name,
+                     char const *comment,
+                     char const *bases);
 void verify_sequence(seqio_sequence sequence,
                      char const *name,
                      char const *comment,

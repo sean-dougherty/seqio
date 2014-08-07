@@ -1,4 +1,4 @@
-#include "pna.h"
+#include "pna.hpp"
 #include "seqio.h"
 #include "util.h"
 
@@ -7,6 +7,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace seqio::pna;
@@ -26,7 +28,7 @@ bool parse_ncbi_comment(const string &comment, map<string, string> &result);
 
 void usage(string msg = "") {
     epf("usage: pna a[ssemble] <output_dir> <input_fasta...>");
-    epf("       pna c[reate] [-q] <output_pna> <input_fasta...>");
+    epf("       pna c[reate] <output_pna> <input_fasta...>");
     epf("       pna t[able] [-s] <pna...>");
     epf("       pna v[alidate] [--seek --buflen len] <pna...>");
     epf("       pna cat <pna...>");
@@ -59,6 +61,9 @@ int main(int argc, const char **argv) {
         map<string, shared_ptr<PnaWriter> > fwriters;
         
         string output_dir = argv[argi++];
+        errif(!boost::filesystem::is_directory(output_dir),
+              "Not a directory: %s", output_dir.c_str());
+
         for(; argi < argc; argi++) {
             string path_fasta = argv[argi];
 
@@ -74,8 +79,10 @@ int main(int argc, const char **argv) {
                 iseq++) {
 
                 char const *name, *comment;
-                seqio_get_value(sequence, SEQIO_KEY_NAME, &name);
-                seqio_get_value(sequence, SEQIO_KEY_COMMENT, &comment);
+                seqio_const_dictionary metadata;
+                seqio_get_metadata(sequence, &metadata);
+                seqio_get_value(metadata, SEQIO_KEY_NAME, &name);
+                seqio_get_value(metadata, SEQIO_KEY_COMMENT, &comment);
 
                 map<string,string> attrs;
                 errif(!parse_ncbi_comment(comment, attrs),
@@ -95,29 +102,27 @@ int main(int argc, const char **argv) {
                 write_seq(sequence, path_fasta, iseq, fwriter);
             }
         }
-#if false
     } else if((mode == "c") || (mode == "create")) {
         if((argc - argi) < 2) {
             usage("Missing create arguments");
-        }
-        bool quiet = false;
-        if(0 == strcmp(argv[argi], "-q")) {
-            quiet = true;
-            argi++;
         }
         string path_pna = argv[argi++];
         shared_ptr<PnaWriter> fwriter = create_writer(path_pna);
 
         for(; argi < argc; argi++) {
             string path_fasta = argv[argi];
-            if(!quiet) cout << "Importing " << path_fasta << endl;
+            cout << "Importing " << path_fasta << endl;
 
-            FastaReader reader(path_fasta.c_str(),
-                               FastaReader::Translate_Caps_GATCN);
-            FastaSequenceDesc seq;
-            for(int iseq = 0; reader.nextSequence(seq); iseq++) {
-                if(!quiet) cout << "  " << seq.name << " " << seq.comment << endl;
-                write_seq(reader, seq, path_fasta, iseq, fwriter);
+            seqio_sequence_iterator iterator;
+            seqio_create_sequence_iterator(path_fasta.c_str(),
+                                           fasta_options,
+                                           &iterator);
+
+            seqio_sequence sequence;
+            for(int iseq = 0;
+                (0 == seqio_next_sequence(iterator, &sequence)) && sequence;
+                iseq++) {
+                write_seq(sequence, path_fasta, iseq, fwriter);
             }
         }
     } else if((mode == "t") || (mode == "table")) {
@@ -186,12 +191,13 @@ int main(int argc, const char **argv) {
             cout << "Validating " << path_pna << endl;
 
             PnaReader pnaReader(path_pna);
-            shared_ptr<FastaReader> fastaReader;
+            seqio_sequence_iterator iterator = SEQIO_NIL_SEQUENCE_ITERATOR;
+
             for(uint64_t i = 0; i < pnaReader.getSequenceCount(); i++) {
                 PnaMetadata metadata = pnaReader.getSequenceMetadata(i);
                 const char *format = metadata.value("origin.format");
                 errif(0 != strcmp(format, "fasta"),
-                      "Unimplement validate format: %s", format);
+                      "Can only validate fasta origin, but found format: %s", format);
                 const char *path_fasta = metadata.value("origin.path");
                 int index = atoi(metadata.value("origin.index"));
                 errif(index < 0, "Have more than 2GB sequences in fasta?!");
@@ -200,23 +206,31 @@ int main(int argc, const char **argv) {
 
                 if(index == 0) {
                     cout << "  " << path_fasta << endl;
-                    fastaReader.reset(new FastaReader(path_fasta,
-                                                      FastaReader::Translate_Caps_GATCN));
+                    seqio_dispose_sequence_iterator(&iterator);
+                    seqio_create_sequence_iterator(path_fasta,
+                                                   fasta_options,
+                                                   &iterator);
                 }
 
-                FastaSequenceDesc fastaSeq;
-                errif(!fastaReader->nextSequence(fastaSeq),
+                seqio_sequence sequence;
+                seqio_next_sequence(iterator, &sequence);
+                errif(!sequence,
                       "No such fasta sequence: %s:%d",
                       path_fasta, index);
 
                 cout << "    " << name << " " << comment << endl;
 
-                errif(fastaSeq.name != name,
+                const char *fasta_name, *fasta_comment;
+                seqio_const_dictionary fasta_metadata;
+                seqio_get_metadata(sequence, &fasta_metadata);
+                seqio_get_value(fasta_metadata, SEQIO_KEY_NAME, &fasta_name);
+                seqio_get_value(fasta_metadata, SEQIO_KEY_COMMENT, &fasta_comment);
+                errif(0 != strcmp(name, fasta_name),
                       "Name mismatch: fasta=%s, pna=%s",
-                      fastaSeq.name.c_str(), name);
-                errif(fastaSeq.comment != comment,
+                      fasta_name, name);
+                errif(0 != strcmp(comment, fasta_comment),
                       "Comment mismatch: fasta=%s, pna=%s",
-                      fastaSeq.comment.c_str(), comment);
+                      fasta_comment, comment);
 
                 shared_ptr<PnaSequenceReader> pnaSeq =
                     pnaReader.openSequence(i);
@@ -227,27 +241,27 @@ int main(int argc, const char **argv) {
 
                     uint64_t fastaLen = 0;
                     uint64_t pnaLen = 0;
-                    uint64_t fastaRc;
+                    uint32_t fastaRc;
                     uint64_t pnaRc;
                     char fastaBuf[buflen];
                     char pnaBuf[buflen];
 
                     while(true) {
-                        fastaRc = fastaReader->read(fastaBuf, sizeof(fastaBuf));
+                        seqio_read(sequence, fastaBuf, sizeof(fastaBuf), &fastaRc);
                         pnaRc = pnaSeq->read(pnaBuf, sizeof(pnaBuf));
                         errif(fastaRc != pnaRc,
-                              "Read rc mismatch for %s:%s at offset %ld;"
-                              "fasta=%ld, pna=%ld",
-                              path_fasta, name, fastaLen,
-                              fastaRc, pnaRc);
+                              "Read rc mismatch for %s:%s at offset %zu;"
+                              "fasta=%zu, pna=%zu",
+                              path_fasta, name, size_t(fastaLen),
+                              size_t(fastaRc), size_t(pnaRc));
 
                         if(fastaRc == 0) break;
 
                         for(uint64_t j = 0; j < fastaRc; j++) {
                             errif(fastaBuf[j] != pnaBuf[j],
-                                  "Base mismatch for %s:%s at offset %ld;"
+                                  "Base mismatch for %s:%s at offset %zu;"
                                   "fasta='%c', pna='%c'",
-                                  path_fasta, name, fastaLen + j,
+                                  path_fasta, name, size_t(fastaLen + j),
                                   fastaBuf[j], pnaBuf[j]);
                         }
 
@@ -257,8 +271,8 @@ int main(int argc, const char **argv) {
 
                     errif(fastaLen != pnaSeq->size(),
                           "Incorrect sequence length reported by PnaSequenceReader;"
-                          "expected=%ld, actual=%ld",
-                          fastaLen, pnaSeq->size());
+                          "expected=%zu, actual=%zu",
+                          size_t(fastaLen), size_t(pnaSeq->size()));
                 } else {
                     if(buflen == 0)
                         buflen = 16;
@@ -272,7 +286,8 @@ int main(int argc, const char **argv) {
                         }
 
                         char fastaBuf[4*1024];
-                        uint64_t fastaRc = fastaReader->read(fastaBuf, sizeof(fastaBuf));
+                        uint32_t fastaRc;
+                        seqio_read(sequence, fastaBuf, sizeof(fastaBuf), &fastaRc);
                         if(fastaRc == 0)
                             break;
 
@@ -289,11 +304,11 @@ int main(int argc, const char **argv) {
 
                             for(uint64_t j = 0; j < nread; j++) {
                                 errif(fastaBuf[off + j] != pnaBuf[j],
-                                      "Base at offset %lu:%lu+%lu; "
+                                      "Base at offset %zu:%zu+%zu; "
                                       "fasta='%c', pna='%c'\n"
                                       "fasta: %s\n"
                                       "pna:   %s\n",
-                                      seqOff, off, j,
+                                      size_t(seqOff), size_t(off), size_t(j),
                                       fastaBuf[off + j], pnaBuf[j],
                                       strndup(fastaBuf + off, nread),
                                       strndup(pnaBuf, nread));
@@ -390,6 +405,7 @@ int main(int argc, const char **argv) {
                 }
             }
         }
+#if false
     } else if((mode == "read") || (mode == "r")){
         bool packed = false;
         for(; argi < argc; argi++) {
@@ -456,7 +472,7 @@ void write_seq(seqio_sequence sequence,
         writer->write(buf, readlen);
     }
 
-    create_seq_metadata(writer, path_fasta, index_fasta, seq);
+    create_seq_metadata(writer, path_fasta, index_fasta, sequence);
 }
 
 bool parse_ncbi_name(const string &name, map<string, string> &result) {
@@ -523,12 +539,22 @@ void create_seq_metadata(shared_ptr<PnaSequenceWriter> writer,
     writer->addMetadata("origin.index", strbuf);
     writer->addMetadata("origin.path", path_fasta.c_str());
     writer->addMetadata("origin.format", "fasta");
-    writer->addMetadata("fasta.name", seq.name.c_str());
-    writer->addMetadata("fasta.comment", seq.comment.c_str());
+
+    
+    char const *name, *comment;
+    seqio_const_dictionary metadata;
+    seqio_get_metadata(sequence, &metadata);
+    seqio_get_value(metadata, SEQIO_KEY_NAME, &name);
+    seqio_get_value(metadata, SEQIO_KEY_COMMENT, &comment);
+
+    writer->addMetadata(SEQIO_KEY_NAME, name);
+    writer->addMetadata(SEQIO_KEY_COMMENT, comment);
+    writer->addMetadata("fasta.name", name);
+    writer->addMetadata("fasta.comment", comment);
 
     {
         map<string,string> attrs;
-        if(parse_ncbi_name(seq.name, attrs)) {
+        if(parse_ncbi_name(name, attrs)) {
             string prefix = "ncbi.";
             for(auto kv: attrs) {
                 writer->addMetadata((prefix+kv.first).c_str(),
@@ -539,7 +565,7 @@ void create_seq_metadata(shared_ptr<PnaSequenceWriter> writer,
 
     {
         map<string,string> attrs;
-        if(parse_ncbi_comment(seq.comment, attrs)) {
+        if(parse_ncbi_comment(comment, attrs)) {
             string prefix = "ncbi.";
             for(auto kv: attrs) {
                 writer->addMetadata((prefix+kv.first).c_str(),

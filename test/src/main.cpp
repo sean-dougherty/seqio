@@ -25,6 +25,21 @@ void test_fasta_gzip__out_of_order() {
     verify_a__out_of_order("input/a.fa.gz");
 }
 
+void test_fasta_transform_caps_gatcn() {
+    seqio_set_err_handler(SEQIO_ERR_HANDLER_ABORT);
+
+    write_file("/tmp/foo.fa",
+               "seq1",
+               "comment",
+               "aAcCgGtTnNqQyY__");
+
+    verify_sequence("/tmp/foo.fa",
+                    SEQIO_BASE_TRANSFORM_CAPS_GATCN,
+                    "seq1",
+                    "comment",
+                    "AACCGGTTNNNNNNNN");
+}
+
 void test_fasta_write() {
     seqio_set_err_handler(SEQIO_ERR_HANDLER_ABORT);
     uint32_t const seqlen = 1024 * 1024 * 16;
@@ -81,6 +96,8 @@ void test_read_all__large() {
 
 
 int main(int argc, const char **argv) {
+    test_fasta_transform_caps_gatcn();
+
     test_pna_write();
     test_fasta_write();
 

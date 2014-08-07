@@ -23,11 +23,12 @@ target_doc=bld/doc/api/html/index.html
 public_inc=$(shell ls src/seqio/*.h)
 
 
-.PHONY: all clean doc lib test fasta
+.PHONY: all clean doc lib test fasta pna
 
 all: $(target_seqio) $(target_pna) $(target_fasta)
 lib: $(target_seqio)
 fasta: $(target_fasta)
+pna: $(target_pna)
 doc: $(target_doc)
 test: $(target_test)
 
@@ -37,7 +38,7 @@ $(target_seqio): $(src_seqio) $(inc_seqio) Makefile
 
 $(target_pna): $(src_pna) $(inc_seqio) $(target_seqio) Makefile
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(src_pna) $(includes) -o $@ -lseqio -L bld/lib -lrt
+	$(CXX) $(CXXFLAGS) $(src_pna) $(includes) -o $@ -lseqio -L bld/lib -lrt -lboost_filesystem -lboost_system
 
 $(target_fasta): $(src_fasta) $(inc_seqio) $(target_seqio) Makefile
 	@mkdir -p $(@D)

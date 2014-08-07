@@ -17,12 +17,22 @@
 /*!
   Value of a null seqio_sequence.
  */
-#define SEQIO_NIL_SEQUENCE ((seqio_sequence *)0)
+#define SEQIO_NIL_SEQUENCE ((seqio_sequence)0)
 
 /*!
   Value of a null seqio_sequence_iterator.
  */
-#define SEQIO_NIL_SEQUENCE_ITERATOR ((seqio_sequence_iterator *)0)
+#define SEQIO_NIL_SEQUENCE_ITERATOR ((seqio_sequence_iterator)0)
+
+/*!
+  Value of a null seqio_writer.
+ */
+#define SEQIO_NIL_WRITER ((seqio_writer)0)
+
+/*!
+  Value of a null seqio_dictionary or seqio_const_dictionary.
+ */
+#define SEQIO_NIL_DICTIONARY ((seqio_const_dictionary)0)
 
 typedef enum {
     SEQIO_FILE_FORMAT_DEDUCE,

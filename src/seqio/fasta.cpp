@@ -177,7 +177,7 @@ CharInterpreter::CharInterpreter(seqio_base_transform transform) {
             firstCol = otherCol = APPEND_SEQUENCE;
             if(transform == SEQIO_BASE_TRANSFORM_CAPS_GATCN) {
                 base = toupper(c);
-                switch(c) {
+                switch(base) {
                 case 'G':
                 case 'A':
                 case 'T':
