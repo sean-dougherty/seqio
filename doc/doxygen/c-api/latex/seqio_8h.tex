@@ -1,0 +1,539 @@
+\hypertarget{seqio_8h}{\section{src/seqio/seqio.h File Reference}
+\label{seqio_8h}\index{src/seqio/seqio.\-h@{src/seqio/seqio.\-h}}
+}
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structseqio__sequence__options}{seqio\-\_\-sequence\-\_\-options}
+\item 
+struct \hyperlink{structseqio__writer__options}{seqio\-\_\-writer\-\_\-options}
+\item 
+struct \hyperlink{structseqio__err__info}{seqio\-\_\-err\-\_\-info}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{seqio_8h_a5d437c7815d99e1fdba881e85e693ad4}{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-N\-A\-M\-E}~\char`\"{}seqio.\-name\char`\"{}
+\item 
+\#define \hyperlink{seqio_8h_acfc0bc67d770f557d34e6dffa5445ffd}{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-C\-O\-M\-M\-E\-N\-T}~\char`\"{}seqio.\-comment\char`\"{}
+\item 
+\#define \hyperlink{seqio_8h_a3838864cb0b7d4eb610036fa5952a0b3}{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E}~((\hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\-\_\-sequence})0)
+\item 
+\#define \hyperlink{seqio_8h_a65901df7d552e2d49ea5c82eb85ac64b}{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R}~((\hyperlink{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{seqio\-\_\-sequence\-\_\-iterator})0)
+\item 
+\#define \hyperlink{seqio_8h_a868153bbb19d788002a201c1d2f264e9}{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-W\-R\-I\-T\-E\-R}~((\hyperlink{seqio_8h_a8832f8cfaaf8fd2ab57dfd33860d9b56}{seqio\-\_\-writer})0)
+\item 
+\#define \hyperlink{seqio_8h_ad7412643d1e24c3ba9976ecda9d13e08}{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-D\-I\-C\-T\-I\-O\-N\-A\-R\-Y}~((\hyperlink{seqio_8h_aa31413e048b8f7aa52c3232b351a26a9}{seqio\-\_\-const\-\_\-dictionary})0)
+\item 
+\#define \hyperlink{seqio_8h_af40622a60eef335443e92e896da902e5}{S\-E\-Q\-I\-O\-\_\-\-T\-R\-U\-E}~1
+\item 
+\#define \hyperlink{seqio_8h_ae520150a492f8f88240685b5131adf4c}{S\-E\-Q\-I\-O\-\_\-\-F\-A\-L\-S\-E}~0
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef uint8\-\_\-t \hyperlink{seqio_8h_a57abadd50743b915977791195869a114}{seqio\-\_\-bool}
+\item 
+typedef struct \\*
+\-\_\-\-\_\-seqio\-\_\-sequence\-\_\-iterator $\ast$ \hyperlink{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{seqio\-\_\-sequence\-\_\-iterator}
+\item 
+typedef struct \-\_\-\-\_\-seqio\-\_\-sequence $\ast$ \hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\-\_\-sequence}
+\item 
+typedef \hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status}($\ast$ \hyperlink{seqio_8h_a5ba13d2932b0e1a7fee2df236a1a218f}{seqio\-\_\-err\-\_\-handler} )(\hyperlink{structseqio__err__info}{seqio\-\_\-err\-\_\-info} err\-\_\-info)
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{seqio_8h_a8a42cf143800fe1523ef6517a18feeaf}{seqio\-\_\-base\-\_\-transform} \{ \hyperlink{seqio_8h_a8a42cf143800fe1523ef6517a18feeafa9b502467eb9d61ac732f7763fc6653c7}{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-N\-O\-N\-E}, 
+\hyperlink{seqio_8h_a8a42cf143800fe1523ef6517a18feeafaa0156279063148fbc1535c7f8248c359}{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-C\-A\-P\-S\-\_\-\-G\-A\-T\-C\-N}
+ \}
+\item 
+enum \hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} 
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} \hyperlink{seqio_8h_aacc3f9149ef3c9c82d9d5b12bef5ded2}{seqio\-\_\-create\-\_\-sequence\-\_\-iterator} (char const $\ast$path, \hyperlink{structseqio__sequence__options}{seqio\-\_\-sequence\-\_\-options} options, \hyperlink{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{seqio\-\_\-sequence\-\_\-iterator} $\ast$iterator)
+\item 
+\hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} \hyperlink{seqio_8h_aeeceda2148a154540cae0e05884173ec}{seqio\-\_\-dispose\-\_\-sequence\-\_\-iterator} (\hyperlink{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{seqio\-\_\-sequence\-\_\-iterator} $\ast$iterator)
+\item 
+\hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} \hyperlink{seqio_8h_ad5a1e8a91515a71c09abf19c3b7b3256}{seqio\-\_\-next\-\_\-sequence} (\hyperlink{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{seqio\-\_\-sequence\-\_\-iterator} iterator, \hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\-\_\-sequence} $\ast$sequence)
+\item 
+\hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} \hyperlink{seqio_8h_a7fb1aa490d7353d46738379e35b983b4}{seqio\-\_\-dispose\-\_\-sequence} (\hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\-\_\-sequence} $\ast$sequence)
+\item 
+\hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} \hyperlink{seqio_8h_aad67041e7ce04288125fb380adaf0697}{seqio\-\_\-read} (\hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\-\_\-sequence} sequence, char $\ast$buffer, uint64\-\_\-t buffer\-\_\-length, uint64\-\_\-t $\ast$read\-\_\-length)
+\item 
+\hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} \hyperlink{seqio_8h_a765268f065a00f217c99d75559cc9994}{seqio\-\_\-read\-\_\-all} (\hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\-\_\-sequence} sequence, char $\ast$$\ast$buffer, uint64\-\_\-t $\ast$buffer\-\_\-length, uint64\-\_\-t $\ast$read\-\_\-length)
+\item 
+\hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} \hyperlink{seqio_8h_a8c7c4c722e76db566327c77ce4cc1a27}{seqio\-\_\-dispose\-\_\-buffer} (char $\ast$$\ast$buffer)
+\item 
+\hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{seqio\-\_\-status} \hyperlink{seqio_8h_aba3a5f3321c998cd04b23734b8ea27f8}{seqio\-\_\-set\-\_\-err\-\_\-handler} (\hyperlink{seqio_8h_a5ba13d2932b0e1a7fee2df236a1a218f}{seqio\-\_\-err\-\_\-handler} err\-\_\-handler)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structseqio__sequence__options}{seqio\-\_\-sequence\-\_\-options} const \hyperlink{seqio_8h_a856b98797bb6e8102a13b9d76446da7f}{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-O\-P\-T\-I\-O\-N\-S}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{seqio_8h_ae520150a492f8f88240685b5131adf4c}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-F\-A\-L\-S\-E@{S\-E\-Q\-I\-O\-\_\-\-F\-A\-L\-S\-E}}
+\index{S\-E\-Q\-I\-O\-\_\-\-F\-A\-L\-S\-E@{S\-E\-Q\-I\-O\-\_\-\-F\-A\-L\-S\-E}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-F\-A\-L\-S\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-E\-Q\-I\-O\-\_\-\-F\-A\-L\-S\-E~0}}\label{seqio_8h_ae520150a492f8f88240685b5131adf4c}
+False value for type seqio\-\_\-bool. \hypertarget{seqio_8h_acfc0bc67d770f557d34e6dffa5445ffd}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-C\-O\-M\-M\-E\-N\-T@{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-C\-O\-M\-M\-E\-N\-T}}
+\index{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-C\-O\-M\-M\-E\-N\-T@{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-C\-O\-M\-M\-E\-N\-T}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-C\-O\-M\-M\-E\-N\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-C\-O\-M\-M\-E\-N\-T~\char`\"{}seqio.\-comment\char`\"{}}}\label{seqio_8h_acfc0bc67d770f557d34e6dffa5445ffd}
+A standard key for obtaining a F\-A\-S\-T\-A-\/style comment for a sequence via seqio\-\_\-get(). A sequence in a P\-N\-A file will typically have a F\-A\-S\-T\-A comment associated with it. \hypertarget{seqio_8h_a5d437c7815d99e1fdba881e85e693ad4}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-N\-A\-M\-E@{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-N\-A\-M\-E}}
+\index{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-N\-A\-M\-E@{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-N\-A\-M\-E}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-N\-A\-M\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-E\-Q\-I\-O\-\_\-\-K\-E\-Y\-\_\-\-N\-A\-M\-E~\char`\"{}seqio.\-name\char`\"{}}}\label{seqio_8h_a5d437c7815d99e1fdba881e85e693ad4}
+A standard key for obtaining the name of a sequence via seqio\-\_\-get(). This key will be valid for any file format. \hypertarget{seqio_8h_ad7412643d1e24c3ba9976ecda9d13e08}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-D\-I\-C\-T\-I\-O\-N\-A\-R\-Y@{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-D\-I\-C\-T\-I\-O\-N\-A\-R\-Y}}
+\index{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-D\-I\-C\-T\-I\-O\-N\-A\-R\-Y@{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-D\-I\-C\-T\-I\-O\-N\-A\-R\-Y}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-D\-I\-C\-T\-I\-O\-N\-A\-R\-Y}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-D\-I\-C\-T\-I\-O\-N\-A\-R\-Y~(({\bf seqio\-\_\-const\-\_\-dictionary})0)}}\label{seqio_8h_ad7412643d1e24c3ba9976ecda9d13e08}
+Value of a null seqio\-\_\-dictionary or seqio\-\_\-const\-\_\-dictionary. \hypertarget{seqio_8h_a3838864cb0b7d4eb610036fa5952a0b3}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E@{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E}}
+\index{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E@{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E~(({\bf seqio\-\_\-sequence})0)}}\label{seqio_8h_a3838864cb0b7d4eb610036fa5952a0b3}
+Value of a null seqio\-\_\-sequence. \hypertarget{seqio_8h_a65901df7d552e2d49ea5c82eb85ac64b}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R@{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R}}
+\index{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R@{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R~(({\bf seqio\-\_\-sequence\-\_\-iterator})0)}}\label{seqio_8h_a65901df7d552e2d49ea5c82eb85ac64b}
+Value of a null seqio\-\_\-sequence\-\_\-iterator. \hypertarget{seqio_8h_a868153bbb19d788002a201c1d2f264e9}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-W\-R\-I\-T\-E\-R@{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-W\-R\-I\-T\-E\-R}}
+\index{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-W\-R\-I\-T\-E\-R@{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-W\-R\-I\-T\-E\-R}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-W\-R\-I\-T\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-W\-R\-I\-T\-E\-R~(({\bf seqio\-\_\-writer})0)}}\label{seqio_8h_a868153bbb19d788002a201c1d2f264e9}
+Value of a null seqio\-\_\-writer. \hypertarget{seqio_8h_af40622a60eef335443e92e896da902e5}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-T\-R\-U\-E@{S\-E\-Q\-I\-O\-\_\-\-T\-R\-U\-E}}
+\index{S\-E\-Q\-I\-O\-\_\-\-T\-R\-U\-E@{S\-E\-Q\-I\-O\-\_\-\-T\-R\-U\-E}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-T\-R\-U\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-E\-Q\-I\-O\-\_\-\-T\-R\-U\-E~1}}\label{seqio_8h_af40622a60eef335443e92e896da902e5}
+True value for type seqio\-\_\-bool. 
+
+\subsection{Typedef Documentation}
+\hypertarget{seqio_8h_a57abadd50743b915977791195869a114}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-bool@{seqio\-\_\-bool}}
+\index{seqio\-\_\-bool@{seqio\-\_\-bool}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-bool}]{\setlength{\rightskip}{0pt plus 5cm}typedef uint8\-\_\-t {\bf seqio\-\_\-bool}}}\label{seqio_8h_a57abadd50743b915977791195869a114}
+Boolean type that is either S\-E\-Q\-I\-O\-\_\-\-T\-R\-U\-E or S\-E\-Q\-I\-O\-\_\-\-F\-A\-L\-S\-E \hypertarget{seqio_8h_aa31413e048b8f7aa52c3232b351a26a9}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-const\-\_\-dictionary@{seqio\-\_\-const\-\_\-dictionary}}
+\index{seqio\-\_\-const\-\_\-dictionary@{seqio\-\_\-const\-\_\-dictionary}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-const\-\_\-dictionary}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct \-\_\-\-\_\-seqio\-\_\-dictionary const$\ast$ {\bf seqio\-\_\-const\-\_\-dictionary}}}\label{seqio_8h_aa31413e048b8f7aa52c3232b351a26a9}
+\hypertarget{seqio_8h_a6278e70d6bb3591cdb2ce20c1f15acff}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-dictionary@{seqio\-\_\-dictionary}}
+\index{seqio\-\_\-dictionary@{seqio\-\_\-dictionary}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-dictionary}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct \-\_\-\-\_\-seqio\-\_\-dictionary$\ast$ {\bf seqio\-\_\-dictionary}}}\label{seqio_8h_a6278e70d6bb3591cdb2ce20c1f15acff}
+\hypertarget{seqio_8h_a5ba13d2932b0e1a7fee2df236a1a218f}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-err\-\_\-handler@{seqio\-\_\-err\-\_\-handler}}
+\index{seqio\-\_\-err\-\_\-handler@{seqio\-\_\-err\-\_\-handler}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-err\-\_\-handler}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf seqio\-\_\-status}($\ast$ seqio\-\_\-err\-\_\-handler)({\bf seqio\-\_\-err\-\_\-info} err\-\_\-info)}}\label{seqio_8h_a5ba13d2932b0e1a7fee2df236a1a218f}
+Signature of error handler. \hypertarget{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-sequence@{seqio\-\_\-sequence}}
+\index{seqio\-\_\-sequence@{seqio\-\_\-sequence}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-sequence}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct \-\_\-\-\_\-seqio\-\_\-sequence$\ast$ {\bf seqio\-\_\-sequence}}}\label{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}
+Handle to an object representing a sequence, which can be used to obtain metadata (e.\-g. sequence name, comment) and sequence data. \hypertarget{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-sequence\-\_\-iterator@{seqio\-\_\-sequence\-\_\-iterator}}
+\index{seqio\-\_\-sequence\-\_\-iterator@{seqio\-\_\-sequence\-\_\-iterator}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-sequence\-\_\-iterator}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct \-\_\-\-\_\-seqio\-\_\-sequence\-\_\-iterator$\ast$ {\bf seqio\-\_\-sequence\-\_\-iterator}}}\label{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}
+Handle to an object capable of iterating over a set of sequences. For example, an iterator for a F\-A\-S\-T\-A file containing 5 sequences will return 5 seqio\-\_\-sequence handles.
+
+Resources associated with the iterator (e.\-g. file handle) will not be released until a call to \hyperlink{seqio_8h_aeeceda2148a154540cae0e05884173ec}{seqio\-\_\-dispose\-\_\-sequence\-\_\-iterator()}. \hypertarget{seqio_8h_a8832f8cfaaf8fd2ab57dfd33860d9b56}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-writer@{seqio\-\_\-writer}}
+\index{seqio\-\_\-writer@{seqio\-\_\-writer}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-writer}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct \-\_\-\-\_\-seqio\-\_\-writer$\ast$ {\bf seqio\-\_\-writer}}}\label{seqio_8h_a8832f8cfaaf8fd2ab57dfd33860d9b56}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{seqio_8h_a8a42cf143800fe1523ef6517a18feeaf}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-base\-\_\-transform@{seqio\-\_\-base\-\_\-transform}}
+\index{seqio\-\_\-base\-\_\-transform@{seqio\-\_\-base\-\_\-transform}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-base\-\_\-transform}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf seqio\-\_\-base\-\_\-transform}}}\label{seqio_8h_a8a42cf143800fe1523ef6517a18feeaf}
+Specifies transformation that should be applied to bases prior to being placed in client read buffer. \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-N\-O\-N\-E@{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-N\-O\-N\-E}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-N\-O\-N\-E@{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-N\-O\-N\-E}}\item[{\em 
+\hypertarget{seqio_8h_a8a42cf143800fe1523ef6517a18feeafa9b502467eb9d61ac732f7763fc6653c7}{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-N\-O\-N\-E}\label{seqio_8h_a8a42cf143800fe1523ef6517a18feeafa9b502467eb9d61ac732f7763fc6653c7}
+}]Don't transform bases. \index{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-C\-A\-P\-S\-\_\-\-G\-A\-T\-C\-N@{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-C\-A\-P\-S\-\_\-\-G\-A\-T\-C\-N}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-C\-A\-P\-S\-\_\-\-G\-A\-T\-C\-N@{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-C\-A\-P\-S\-\_\-\-G\-A\-T\-C\-N}}\item[{\em 
+\hypertarget{seqio_8h_a8a42cf143800fe1523ef6517a18feeafaa0156279063148fbc1535c7f8248c359}{S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-C\-A\-P\-S\-\_\-\-G\-A\-T\-C\-N}\label{seqio_8h_a8a42cf143800fe1523ef6517a18feeafaa0156279063148fbc1535c7f8248c359}
+}]Make all bases uppercase (G\-A\-C\-T) and make anything other than G\-A\-C\-T an N. \end{description}
+\end{Desc}
+\hypertarget{seqio_8h_ac771baba3757d8e58d9763ff67e5b64d}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-file\-\_\-format@{seqio\-\_\-file\-\_\-format}}
+\index{seqio\-\_\-file\-\_\-format@{seqio\-\_\-file\-\_\-format}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-file\-\_\-format}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf seqio\-\_\-file\-\_\-format}}}\label{seqio_8h_ac771baba3757d8e58d9763ff67e5b64d}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-D\-E\-D\-U\-C\-E@{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-D\-E\-D\-U\-C\-E}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-D\-E\-D\-U\-C\-E@{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-D\-E\-D\-U\-C\-E}}\item[{\em 
+\hypertarget{seqio_8h_ac771baba3757d8e58d9763ff67e5b64da98a453d4b6b37b8291d08f3607829c8a}{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-D\-E\-D\-U\-C\-E}\label{seqio_8h_ac771baba3757d8e58d9763ff67e5b64da98a453d4b6b37b8291d08f3607829c8a}
+}]\index{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A@{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A@{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A}}\item[{\em 
+\hypertarget{seqio_8h_ac771baba3757d8e58d9763ff67e5b64da147b4953a1353df2cb48f3ea237415f0}{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A}\label{seqio_8h_ac771baba3757d8e58d9763ff67e5b64da147b4953a1353df2cb48f3ea237415f0}
+}]\index{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A\-\_\-\-G\-Z\-I\-P@{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A\-\_\-\-G\-Z\-I\-P}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A\-\_\-\-G\-Z\-I\-P@{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A\-\_\-\-G\-Z\-I\-P}}\item[{\em 
+\hypertarget{seqio_8h_ac771baba3757d8e58d9763ff67e5b64da56a423dd5e29344872b06f16603ca357}{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-F\-A\-S\-T\-A\-\_\-\-G\-Z\-I\-P}\label{seqio_8h_ac771baba3757d8e58d9763ff67e5b64da56a423dd5e29344872b06f16603ca357}
+}]\index{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-P\-N\-A@{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-P\-N\-A}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-P\-N\-A@{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-P\-N\-A}}\item[{\em 
+\hypertarget{seqio_8h_ac771baba3757d8e58d9763ff67e5b64da62b38bd65e0cbae26122a3328b258e31}{S\-E\-Q\-I\-O\-\_\-\-F\-I\-L\-E\-\_\-\-F\-O\-R\-M\-A\-T\-\_\-\-P\-N\-A}\label{seqio_8h_ac771baba3757d8e58d9763ff67e5b64da62b38bd65e0cbae26122a3328b258e31}
+}]\end{description}
+\end{Desc}
+\hypertarget{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-status@{seqio\-\_\-status}}
+\index{seqio\-\_\-status@{seqio\-\_\-status}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf seqio\-\_\-status}}}\label{seqio_8h_a65c7b2a9724d27621eaf42100585b81b}
+The possible return values for seqio\-\_\-get\-\_\-status() \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S@{S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S@{S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S}}\item[{\em 
+\hypertarget{seqio_8h_a65c7b2a9724d27621eaf42100585b81ba80b53c6baa127e876eb8cc5a7ea07aea}{S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S}\label{seqio_8h_a65c7b2a9724d27621eaf42100585b81ba80b53c6baa127e876eb8cc5a7ea07aea}
+}]\index{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M\-E\-T\-E\-R@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M\-E\-T\-E\-R}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M\-E\-T\-E\-R@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M\-E\-T\-E\-R}}\item[{\em 
+\hypertarget{seqio_8h_a65c7b2a9724d27621eaf42100585b81bae5cbc53dfe5f9e611737f122ac25316d}{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M\-E\-T\-E\-R}\label{seqio_8h_a65c7b2a9724d27621eaf42100585b81bae5cbc53dfe5f9e611737f122ac25316d}
+}]\index{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-S\-T\-A\-T\-E@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-S\-T\-A\-T\-E}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-S\-T\-A\-T\-E@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-S\-T\-A\-T\-E}}\item[{\em 
+\hypertarget{seqio_8h_a65c7b2a9724d27621eaf42100585b81baba3168bb8902592384ea8a67b6c164a7}{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-S\-T\-A\-T\-E}\label{seqio_8h_a65c7b2a9724d27621eaf42100585b81baba3168bb8902592384ea8a67b6c164a7}
+}]\index{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-F\-I\-L\-E\-\_\-\-N\-O\-T\-\_\-\-F\-O\-U\-N\-D@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-F\-I\-L\-E\-\_\-\-N\-O\-T\-\_\-\-F\-O\-U\-N\-D}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-F\-I\-L\-E\-\_\-\-N\-O\-T\-\_\-\-F\-O\-U\-N\-D@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-F\-I\-L\-E\-\_\-\-N\-O\-T\-\_\-\-F\-O\-U\-N\-D}}\item[{\em 
+\hypertarget{seqio_8h_a65c7b2a9724d27621eaf42100585b81ba83766ec2e76df67518c44292c42ec82a}{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-F\-I\-L\-E\-\_\-\-N\-O\-T\-\_\-\-F\-O\-U\-N\-D}\label{seqio_8h_a65c7b2a9724d27621eaf42100585b81ba83766ec2e76df67518c44292c42ec82a}
+}]\index{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-O@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-O}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-O@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-O}}\item[{\em 
+\hypertarget{seqio_8h_a65c7b2a9724d27621eaf42100585b81ba66a32daf6ececca6c7fdcf7aa992384d}{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-I\-O}\label{seqio_8h_a65c7b2a9724d27621eaf42100585b81ba66a32daf6ececca6c7fdcf7aa992384d}
+}]\index{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-O\-U\-T\-\_\-\-O\-F\-\_\-\-M\-E\-M\-O\-R\-Y@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-O\-U\-T\-\_\-\-O\-F\-\_\-\-M\-E\-M\-O\-R\-Y}!seqio.\-h@{seqio.\-h}}\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-O\-U\-T\-\_\-\-O\-F\-\_\-\-M\-E\-M\-O\-R\-Y@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-O\-U\-T\-\_\-\-O\-F\-\_\-\-M\-E\-M\-O\-R\-Y}}\item[{\em 
+\hypertarget{seqio_8h_a65c7b2a9724d27621eaf42100585b81baa77b4efa57429d6c082cd01e17192b32}{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-O\-U\-T\-\_\-\-O\-F\-\_\-\-M\-E\-M\-O\-R\-Y}\label{seqio_8h_a65c7b2a9724d27621eaf42100585b81baa77b4efa57429d6c082cd01e17192b32}
+}]\end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\hypertarget{seqio_8h_adae21d7faf3ebb995d9b2da025ee2ac7}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-clear@{seqio\-\_\-clear}}
+\index{seqio\-\_\-clear@{seqio\-\_\-clear}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-clear}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-clear (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-dictionary}}]{dict}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_adae21d7faf3ebb995d9b2da025ee2ac7}
+\hypertarget{seqio_8h_a9b72937e8509a4d9904bfe35c9312689}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-create\-\_\-dictionary@{seqio\-\_\-create\-\_\-dictionary}}
+\index{seqio\-\_\-create\-\_\-dictionary@{seqio\-\_\-create\-\_\-dictionary}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-create\-\_\-dictionary}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-create\-\_\-dictionary (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-dictionary} $\ast$}]{dict}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a9b72937e8509a4d9904bfe35c9312689}
+\hypertarget{seqio_8h_a2a43c14413d6e2edc3375e91327312d4}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-create\-\_\-sequence@{seqio\-\_\-create\-\_\-sequence}}
+\index{seqio\-\_\-create\-\_\-sequence@{seqio\-\_\-create\-\_\-sequence}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-create\-\_\-sequence}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-create\-\_\-sequence (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-writer}}]{writer, }
+\item[{{\bf seqio\-\_\-const\-\_\-dictionary}}]{metadata}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a2a43c14413d6e2edc3375e91327312d4}
+\hypertarget{seqio_8h_aacc3f9149ef3c9c82d9d5b12bef5ded2}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-create\-\_\-sequence\-\_\-iterator@{seqio\-\_\-create\-\_\-sequence\-\_\-iterator}}
+\index{seqio\-\_\-create\-\_\-sequence\-\_\-iterator@{seqio\-\_\-create\-\_\-sequence\-\_\-iterator}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-create\-\_\-sequence\-\_\-iterator}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-create\-\_\-sequence\-\_\-iterator (
+\begin{DoxyParamCaption}
+\item[{char const $\ast$}]{path, }
+\item[{{\bf seqio\-\_\-sequence\-\_\-options}}]{options, }
+\item[{{\bf seqio\-\_\-sequence\-\_\-iterator} $\ast$}]{iterator}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_aacc3f9149ef3c9c82d9d5b12bef5ded2}
+Open a file for reading one or more sequences. The file must be one of the supported formats\-:
+\begin{DoxyItemize}
+\item F\-A\-S\-T\-A (may be gzipped)
+\item P\-N\-A
+\end{DoxyItemize}
+
+The set of sequences will be lazily populated for inherently sequential formats like F\-A\-S\-T\-A.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em path} & Location of file in filesystem. \\
+\hline
+\mbox{\tt in}  & {\em options} & Options used in processing the sequences. \\
+\hline
+\mbox{\tt out}  & {\em iterator} & Iterator for all sequences found in file.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S if successful, otherwise S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-$\ast$.
+\end{DoxyReturn}
+\begin{DoxyAttention}{Attention}
+File formats like F\-A\-S\-T\-A are inherently sequential, and the seqio implementation must therefore read a sequence's entire contents in order to find the next sequence. For this reason, it is most efficient to read the contents of sequences between calls to sequence\-\_\-next().
+\end{DoxyAttention}
+{\bfseries Example} 
+\begin{DoxyCode}
+\hyperlink{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{seqio\_sequence\_iterator} iterator;
+\hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\_sequence} sequence;
+\textcolor{keyword}{const} \textcolor{keywordtype}{char} *name;
+
+\textcolor{comment}{// Open the file.}
+\hyperlink{seqio_8h_aacc3f9149ef3c9c82d9d5b12bef5ded2}{seqio\_create\_sequence\_iterator}(\textcolor{stringliteral}{"./test.fa.gz"},
+                      \hyperlink{seqio_8h_a856b98797bb6e8102a13b9d76446da7f}{SEQIO\_DEFAULT\_SEQUENCE\_OPTIONS},
+                      &iterator);
+
+\textcolor{comment}{// Get the first sequence.}
+\hyperlink{seqio_8h_ad5a1e8a91515a71c09abf19c3b7b3256}{seqio\_next\_sequence}(iterator, &sequence);
+
+\textcolor{comment}{// Print out its name.}
+\hyperlink{seqio_8h_aec948942add1f17ce3fb22a6493b4fe8}{seqio\_get\_value}(sequence, \hyperlink{seqio_8h_a5d437c7815d99e1fdba881e85e693ad4}{SEQIO\_KEY\_NAME}, &name);
+\end{DoxyCode}
+ \hypertarget{seqio_8h_af01ea4b223ceb9ea3abbb602e8f73786}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-create\-\_\-writer@{seqio\-\_\-create\-\_\-writer}}
+\index{seqio\-\_\-create\-\_\-writer@{seqio\-\_\-create\-\_\-writer}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-create\-\_\-writer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-create\-\_\-writer (
+\begin{DoxyParamCaption}
+\item[{char const $\ast$}]{path, }
+\item[{{\bf seqio\-\_\-writer\-\_\-options}}]{options, }
+\item[{{\bf seqio\-\_\-writer} $\ast$}]{writer}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_af01ea4b223ceb9ea3abbb602e8f73786}
+\hypertarget{seqio_8h_a8c7c4c722e76db566327c77ce4cc1a27}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-dispose\-\_\-buffer@{seqio\-\_\-dispose\-\_\-buffer}}
+\index{seqio\-\_\-dispose\-\_\-buffer@{seqio\-\_\-dispose\-\_\-buffer}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-dispose\-\_\-buffer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-dispose\-\_\-buffer (
+\begin{DoxyParamCaption}
+\item[{char $\ast$$\ast$}]{buffer}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a8c7c4c722e76db566327c77ce4cc1a27}
+Dispose a buffer allocated by the internal implementation (e.\-g. \hyperlink{seqio_8h_a765268f065a00f217c99d75559cc9994}{seqio\-\_\-read\-\_\-all()}).
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in,out}  & {\em buffer} & The buffer to be disposed. $\ast$buffer can be N\-U\-L\-L. Upon return, buffer will be N\-U\-L\-L.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S if successful, otherwise S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-$\ast$. 
+\end{DoxyReturn}
+\hypertarget{seqio_8h_adad38882a95a8846f033581c18a70274}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-dispose\-\_\-dictionary@{seqio\-\_\-dispose\-\_\-dictionary}}
+\index{seqio\-\_\-dispose\-\_\-dictionary@{seqio\-\_\-dispose\-\_\-dictionary}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-dispose\-\_\-dictionary}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-dispose\-\_\-dictionary (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-dictionary} $\ast$}]{dict}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_adad38882a95a8846f033581c18a70274}
+\hypertarget{seqio_8h_a7fb1aa490d7353d46738379e35b983b4}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-dispose\-\_\-sequence@{seqio\-\_\-dispose\-\_\-sequence}}
+\index{seqio\-\_\-dispose\-\_\-sequence@{seqio\-\_\-dispose\-\_\-sequence}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-dispose\-\_\-sequence}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-dispose\-\_\-sequence (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-sequence} $\ast$}]{sequence}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a7fb1aa490d7353d46738379e35b983b4}
+Disposes resources associated with a sequence (e.\-g. read cache).
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in,out}  & {\em sequence} & The sequence to be disposed. Value is set to S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S if successful, otherwise S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-$\ast$.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E is accepted and is a no-\/op. 
+\end{DoxyNote}
+\hypertarget{seqio_8h_aeeceda2148a154540cae0e05884173ec}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-dispose\-\_\-sequence\-\_\-iterator@{seqio\-\_\-dispose\-\_\-sequence\-\_\-iterator}}
+\index{seqio\-\_\-dispose\-\_\-sequence\-\_\-iterator@{seqio\-\_\-dispose\-\_\-sequence\-\_\-iterator}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-dispose\-\_\-sequence\-\_\-iterator}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-dispose\-\_\-sequence\-\_\-iterator (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-sequence\-\_\-iterator} $\ast$}]{iterator}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_aeeceda2148a154540cae0e05884173ec}
+Dispose the iterator. Any sequences that were obtained from it that have not been disposed are still valid.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in,out}  & {\em iterator} & The iterator to be disposed. Value is set to S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S if successful, otherwise S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-$\ast$.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+S\-E\-Q\-I\-O\-\_\-\-N\-I\-L\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-I\-T\-E\-R\-A\-T\-O\-R is accepted and is a no-\/op. 
+\end{DoxyNote}
+\hypertarget{seqio_8h_a393dd9dd2f5f563d691588d0f05799dc}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-dispose\-\_\-writer@{seqio\-\_\-dispose\-\_\-writer}}
+\index{seqio\-\_\-dispose\-\_\-writer@{seqio\-\_\-dispose\-\_\-writer}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-dispose\-\_\-writer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-dispose\-\_\-writer (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-writer} $\ast$}]{writer}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a393dd9dd2f5f563d691588d0f05799dc}
+\hypertarget{seqio_8h_a6b087a65f4afe324e81163b4d4b2ffa2}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-get\-\_\-key@{seqio\-\_\-get\-\_\-key}}
+\index{seqio\-\_\-get\-\_\-key@{seqio\-\_\-get\-\_\-key}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-get\-\_\-key}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-get\-\_\-key (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-const\-\_\-dictionary}}]{dict, }
+\item[{uint32\-\_\-t}]{key\-\_\-index, }
+\item[{char const $\ast$$\ast$}]{key}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a6b087a65f4afe324e81163b4d4b2ffa2}
+\hypertarget{seqio_8h_a63837c8b6212d426f4d77c97a14f4569}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-get\-\_\-key\-\_\-count@{seqio\-\_\-get\-\_\-key\-\_\-count}}
+\index{seqio\-\_\-get\-\_\-key\-\_\-count@{seqio\-\_\-get\-\_\-key\-\_\-count}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-get\-\_\-key\-\_\-count}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-get\-\_\-key\-\_\-count (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-const\-\_\-dictionary}}]{dict, }
+\item[{uint32\-\_\-t $\ast$}]{count}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a63837c8b6212d426f4d77c97a14f4569}
+\hypertarget{seqio_8h_aee9c28929b7e1f296529865e5412e02d}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-get\-\_\-metadata@{seqio\-\_\-get\-\_\-metadata}}
+\index{seqio\-\_\-get\-\_\-metadata@{seqio\-\_\-get\-\_\-metadata}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-get\-\_\-metadata}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-get\-\_\-metadata (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-sequence}}]{sequence, }
+\item[{{\bf seqio\-\_\-const\-\_\-dictionary} $\ast$}]{dict}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_aee9c28929b7e1f296529865e5412e02d}
+\hypertarget{seqio_8h_aec948942add1f17ce3fb22a6493b4fe8}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-get\-\_\-value@{seqio\-\_\-get\-\_\-value}}
+\index{seqio\-\_\-get\-\_\-value@{seqio\-\_\-get\-\_\-value}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-get\-\_\-value}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-get\-\_\-value (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-const\-\_\-dictionary}}]{dict, }
+\item[{char const $\ast$}]{key, }
+\item[{char const $\ast$$\ast$}]{value}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_aec948942add1f17ce3fb22a6493b4fe8}
+\hypertarget{seqio_8h_af2737dd7eafc3bddb992fb864ceafa60}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-has\-\_\-key@{seqio\-\_\-has\-\_\-key}}
+\index{seqio\-\_\-has\-\_\-key@{seqio\-\_\-has\-\_\-key}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-has\-\_\-key}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-has\-\_\-key (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-const\-\_\-dictionary}}]{dict, }
+\item[{{\bf seqio\-\_\-bool} $\ast$}]{has\-\_\-key}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_af2737dd7eafc3bddb992fb864ceafa60}
+\hypertarget{seqio_8h_ad5a1e8a91515a71c09abf19c3b7b3256}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-next\-\_\-sequence@{seqio\-\_\-next\-\_\-sequence}}
+\index{seqio\-\_\-next\-\_\-sequence@{seqio\-\_\-next\-\_\-sequence}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-next\-\_\-sequence}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-next\-\_\-sequence (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-sequence\-\_\-iterator}}]{iterator, }
+\item[{{\bf seqio\-\_\-sequence} $\ast$}]{sequence}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_ad5a1e8a91515a71c09abf19c3b7b3256}
+Get the next sequence from the iterator. The result is placed in the sequence parameter.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em iterator} & Sequence iterator. \\
+\hline
+\mbox{\tt out}  & {\em sequence} & Contains next sequence upon return.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S if successful, otherwise S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-$\ast$.
+\end{DoxyReturn}
+\begin{DoxyAttention}{Attention}
+File formats like F\-A\-S\-T\-A are inherently sequential, and the seqio implementation must therefore read a sequence's entire contents in order to find the next sequence. For this reason, it is most efficient to read the contents of sequences between calls to sequence\-\_\-next(). See example code.
+\end{DoxyAttention}
+{\bfseries Example} 
+\begin{DoxyCode}
+\hyperlink{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{seqio\_sequence\_iterator} iterator;
+\hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\_sequence} sequence;
+
+\textcolor{keywordtype}{char} *buffer = NULL;
+uint32\_t buffer\_length;
+
+\textcolor{comment}{// ... create iterator ...}
+
+\textcolor{keywordflow}{while}( (\hyperlink{seqio_8h_ad5a1e8a91515a71c09abf19c3b7b3256}{seqio\_next\_sequence}(iterator, &sequence) == 
+      \hyperlink{seqio_8h_a65c7b2a9724d27621eaf42100585b81ba80b53c6baa127e876eb8cc5a7ea07aea}{SEQIO\_SUCCESS})
+       && iterator) \{
+  uint32\_t sequence\_length;
+
+  \textcolor{comment}{// By reading the sequence, the file pointer will be at the end of the sequence,}
+  \textcolor{comment}{// allowing the iterator to efficiently find the next sequence in a format like FASTA.}
+  \hyperlink{seqio_8h_a765268f065a00f217c99d75559cc9994}{seqio\_read\_all}(sequence, &sequence\_length, &buffer, &buffer\_length);
+
+  \textcolor{comment}{// ... do stuff with sequence data ...}
+
+  \hyperlink{seqio_8h_a7fb1aa490d7353d46738379e35b983b4}{seqio\_dispose\_sequence}(sequence);
+\}
+
+\textcolor{comment}{// ... dispose iterator and buffer ...}
+\end{DoxyCode}
+ \hypertarget{seqio_8h_aad67041e7ce04288125fb380adaf0697}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-read@{seqio\-\_\-read}}
+\index{seqio\-\_\-read@{seqio\-\_\-read}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-read}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-read (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-sequence}}]{sequence, }
+\item[{char $\ast$}]{buffer, }
+\item[{uint64\-\_\-t}]{buffer\-\_\-length, }
+\item[{uint64\-\_\-t $\ast$}]{read\-\_\-length}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_aad67041e7ce04288125fb380adaf0697}
+Read bases from sequence.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em sequence} & The sequence to be read. \\
+\hline
+\mbox{\tt in}  & {\em buffer} & Destination for bases. \\
+\hline
+\mbox{\tt in}  & {\em buffer\-\_\-length} & Size of buffer in bytes. \\
+\hline
+\mbox{\tt out}  & {\em read\-\_\-length} & Number of bases read.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S if successful, otherwise S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-$\ast$. 
+\end{DoxyReturn}
+\hypertarget{seqio_8h_a765268f065a00f217c99d75559cc9994}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-read\-\_\-all@{seqio\-\_\-read\-\_\-all}}
+\index{seqio\-\_\-read\-\_\-all@{seqio\-\_\-read\-\_\-all}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-read\-\_\-all}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-read\-\_\-all (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-sequence}}]{sequence, }
+\item[{char $\ast$$\ast$}]{buffer, }
+\item[{uint64\-\_\-t $\ast$}]{buffer\-\_\-length, }
+\item[{uint64\-\_\-t $\ast$}]{read\-\_\-length}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a765268f065a00f217c99d75559cc9994}
+Read entirety of sequence, allocating buffer on client's behalf. If some portion of the sequence has already been read via \hyperlink{seqio_8h_aad67041e7ce04288125fb380adaf0697}{seqio\-\_\-read()}, that portion will not be included in the result of read\-\_\-all(). The result is guaranteed to be null-\/terminated; the null is not included in read\-\_\-length.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em sequence} & The sequence to be read. \\
+\hline
+\mbox{\tt in,out}  & {\em buffer} & Destination for bases. Client should not allocate the memory pointed to by $\ast$buffer. $\ast$buffer should initially be N\-U\-L\-L. \\
+\hline
+\mbox{\tt in,out}  & {\em buffer\-\_\-length} & Upon return, size of buffer in bytes. If $\ast$buffer parameter is N\-U\-L\-L, this value is ignored. \\
+\hline
+\mbox{\tt out}  & {\em read\-\_\-length} & Upon return, number of bases read.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+S\-E\-Q\-I\-O\-\_\-\-S\-U\-C\-C\-E\-S\-S if successful, otherwise S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-$\ast$.
+\end{DoxyReturn}
+{\bfseries Example} 
+\begin{DoxyCode}
+\hyperlink{seqio_8h_a4cbaba14bbd741cce5098f7e8c3fd37f}{seqio\_sequence\_iterator} iterator;
+\hyperlink{seqio_8h_a9c2018bd6a41e0e0d6199941d8baa72e}{seqio\_sequence} sequence;
+\textcolor{keywordtype}{char} *buffer = NULL;
+uint32\_t buffer\_length;
+uint32\_t read\_length;
+
+\textcolor{comment}{// ... obtain sequence iterator ...}
+
+sequence = \hyperlink{seqio_8h_ad5a1e8a91515a71c09abf19c3b7b3256}{seqio\_next\_sequence}(iterator, &sequence);
+\hyperlink{seqio_8h_a765268f065a00f217c99d75559cc9994}{seqio\_read\_all}(sequence,
+               &read\_length,
+               &buffer,
+               &buffer\_length);
+
+\textcolor{comment}{//}
+\end{DoxyCode}
+ \hypertarget{seqio_8h_aba3a5f3321c998cd04b23734b8ea27f8}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-set\-\_\-err\-\_\-handler@{seqio\-\_\-set\-\_\-err\-\_\-handler}}
+\index{seqio\-\_\-set\-\_\-err\-\_\-handler@{seqio\-\_\-set\-\_\-err\-\_\-handler}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-set\-\_\-err\-\_\-handler}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-set\-\_\-err\-\_\-handler (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-err\-\_\-handler}}]{err\-\_\-handler}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_aba3a5f3321c998cd04b23734b8ea27f8}
+Set the error handler. \hypertarget{seqio_8h_aba89f67e1e7a9870205236e2438218ac}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-set\-\_\-value@{seqio\-\_\-set\-\_\-value}}
+\index{seqio\-\_\-set\-\_\-value@{seqio\-\_\-set\-\_\-value}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-set\-\_\-value}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-set\-\_\-value (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-dictionary}}]{dict, }
+\item[{char const $\ast$}]{key, }
+\item[{char const $\ast$}]{value}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_aba89f67e1e7a9870205236e2438218ac}
+\hypertarget{seqio_8h_a29c0b8bb35c64d504168df990cdcbac5}{\index{seqio.\-h@{seqio.\-h}!seqio\-\_\-write@{seqio\-\_\-write}}
+\index{seqio\-\_\-write@{seqio\-\_\-write}!seqio.h@{seqio.\-h}}
+\subsubsection[{seqio\-\_\-write}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-status} seqio\-\_\-write (
+\begin{DoxyParamCaption}
+\item[{{\bf seqio\-\_\-writer}}]{writer, }
+\item[{char const $\ast$}]{buffer, }
+\item[{uint64\-\_\-t}]{length}
+\end{DoxyParamCaption}
+)}}\label{seqio_8h_a29c0b8bb35c64d504168df990cdcbac5}
+
+
+\subsection{Variable Documentation}
+\hypertarget{seqio_8h_a856b98797bb6e8102a13b9d76446da7f}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-O\-P\-T\-I\-O\-N\-S@{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-O\-P\-T\-I\-O\-N\-S}}
+\index{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-O\-P\-T\-I\-O\-N\-S@{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-O\-P\-T\-I\-O\-N\-S}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-O\-P\-T\-I\-O\-N\-S}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-sequence\-\_\-options} const S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-S\-E\-Q\-U\-E\-N\-C\-E\-\_\-\-O\-P\-T\-I\-O\-N\-S}}\label{seqio_8h_a856b98797bb6e8102a13b9d76446da7f}
+Provides reasonable default options for \hyperlink{seqio_8h_aacc3f9149ef3c9c82d9d5b12bef5ded2}{seqio\-\_\-create\-\_\-sequence\-\_\-iterator()}\-:
+\begin{DoxyItemize}
+\item base\-\_\-transform\-: S\-E\-Q\-I\-O\-\_\-\-B\-A\-S\-E\-\_\-\-T\-R\-A\-N\-S\-F\-O\-R\-M\-\_\-\-N\-O\-N\-E 
+\end{DoxyItemize}\hypertarget{seqio_8h_ac17cd37e465f2ce782d2a0afc1710a7c}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-R\-I\-T\-E\-R\-\_\-\-O\-P\-T\-I\-O\-N\-S@{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-R\-I\-T\-E\-R\-\_\-\-O\-P\-T\-I\-O\-N\-S}}
+\index{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-R\-I\-T\-E\-R\-\_\-\-O\-P\-T\-I\-O\-N\-S@{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-R\-I\-T\-E\-R\-\_\-\-O\-P\-T\-I\-O\-N\-S}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-R\-I\-T\-E\-R\-\_\-\-O\-P\-T\-I\-O\-N\-S}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-writer\-\_\-options} const S\-E\-Q\-I\-O\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-R\-I\-T\-E\-R\-\_\-\-O\-P\-T\-I\-O\-N\-S}}\label{seqio_8h_ac17cd37e465f2ce782d2a0afc1710a7c}
+\hypertarget{seqio_8h_ad00780ef397850f187e9dd5fec9348f9}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-A\-B\-O\-R\-T@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-A\-B\-O\-R\-T}}
+\index{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-A\-B\-O\-R\-T@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-A\-B\-O\-R\-T}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-A\-B\-O\-R\-T}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-err\-\_\-handler} const S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-A\-B\-O\-R\-T}}\label{seqio_8h_ad00780ef397850f187e9dd5fec9348f9}
+\hypertarget{seqio_8h_ae7333b2827142c4b3ef8a2df70d28ac3}{\index{seqio.\-h@{seqio.\-h}!S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-R\-E\-T\-U\-R\-N@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-R\-E\-T\-U\-R\-N}}
+\index{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-R\-E\-T\-U\-R\-N@{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-R\-E\-T\-U\-R\-N}!seqio.h@{seqio.\-h}}
+\subsubsection[{S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-R\-E\-T\-U\-R\-N}]{\setlength{\rightskip}{0pt plus 5cm}{\bf seqio\-\_\-err\-\_\-handler} const S\-E\-Q\-I\-O\-\_\-\-E\-R\-R\-\_\-\-H\-A\-N\-D\-L\-E\-R\-\_\-\-R\-E\-T\-U\-R\-N}}\label{seqio_8h_ae7333b2827142c4b3ef8a2df70d28ac3}
