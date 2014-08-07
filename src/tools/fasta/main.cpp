@@ -94,8 +94,10 @@ int main(int argc, const char **argv) {
                 if(!kseqNext) break;
 
                 char const *name, *comment;
-                seqio_get_value(sequence, SEQIO_KEY_NAME, &name);
-                seqio_get_value(sequence, SEQIO_KEY_COMMENT, &comment);
+                seqio_const_dictionary metadata;
+                seqio_get_metadata(sequence, &metadata);
+                seqio_get_value(metadata, SEQIO_KEY_NAME, &name);
+                seqio_get_value(metadata, SEQIO_KEY_COMMENT, &comment);
                 errif(string(name) != kseq->name.s,
                       "Name mismatch; kseq=%s, fasta=%s.",
                       kseq->name.s, name);
@@ -171,8 +173,10 @@ int main(int argc, const char **argv) {
 
         while( (0 == seqio_next_sequence(iterator, &sequence)) && sequence) {
             char const *name, *comment;
-            seqio_get_value(sequence, SEQIO_KEY_NAME, &name);
-            seqio_get_value(sequence, SEQIO_KEY_COMMENT, &comment);
+            seqio_const_dictionary metadata;
+            seqio_get_metadata(sequence, &metadata);
+            seqio_get_value(metadata, SEQIO_KEY_NAME, &name);
+            seqio_get_value(metadata, SEQIO_KEY_COMMENT, &comment);
 
             uint32_t seqlen;
             seqio_read_all(sequence, &buf, &buflen, &seqlen);
@@ -184,9 +188,7 @@ int main(int argc, const char **argv) {
                                 SEQIO_DEFAULT_WRITER_OPTIONS,
                                 &writer);
 
-            seqio_create_sequence(writer);
-            seqio_add_metadata(writer, SEQIO_KEY_NAME, name);
-            seqio_add_metadata(writer, SEQIO_KEY_COMMENT, comment);
+            seqio_create_sequence(writer, metadata);
             seqio_write(writer, buf, seqlen);
 
             seqio_dispose_writer(&writer);
