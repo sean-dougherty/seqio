@@ -405,7 +405,6 @@ int main(int argc, const char **argv) {
                 }
             }
         }
-#if false
     } else if((mode == "read") || (mode == "r")){
         bool packed = false;
         for(; argi < argc; argi++) {
@@ -445,7 +444,6 @@ int main(int argc, const char **argv) {
         }
     } else {
         usage("Invalid mode: '"+mode+"'");
-#endif
     }
     
     return 0;
