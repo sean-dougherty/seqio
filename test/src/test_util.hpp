@@ -3,16 +3,18 @@
 #include "seqio.h"
 
 #include <iostream>
+#include <vector>
 
 #define SH(CMD) {cout << CMD << endl; int rc = system(CMD); if(rc != 0) exit(rc);}
 
 int open_count(char const *path);
-char *create_random_bases(uint32_t len);
-void write_file(char const *path,
-                char const *name,
-                char const *comment,
-                char const *bases);
-
+char *create_random_bases(uint32_t len, int seed = 1);
+struct seqspec_t {
+    char const *name;
+    char const *comment;
+    char const *bases;
+};
+void write_file(char const *path, std::vector<seqspec_t> seqs);
 void verify_basic_metadata(seqio_sequence sequence, char const *name, char const *comment);
 void verify_bases(seqio_sequence sequence, char const *expected, uint32_t buflen);
 void verify_sequence(char const *path,

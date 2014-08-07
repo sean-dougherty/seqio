@@ -2,6 +2,8 @@
 
 #include "seqio.h"
 
+#include <assert.h>
+
 using namespace std;
 
 
@@ -28,10 +30,7 @@ void test_fasta_gzip__out_of_order() {
 void test_fasta_transform_caps_gatcn() {
     seqio_set_err_handler(SEQIO_ERR_HANDLER_ABORT);
 
-    write_file("/tmp/foo.fa",
-               "seq1",
-               "comment",
-               "aAcCgGtTnNqQyY__");
+    write_file("/tmp/foo.fa", {{"seq1", "comment", "aAcCgGtTnNqQyY__"}});
 
     verify_sequence("/tmp/foo.fa",
                     SEQIO_BASE_TRANSFORM_CAPS_GATCN,
@@ -94,8 +93,27 @@ void test_read_all__large() {
     verify_read_all(16 * 1024 * 1024);
 }
 
+void test_return_err_handler() {
+    seqio_set_err_handler(SEQIO_ERR_HANDLER_RETURN);
+
+    seqio_status rc;
+    
+    seqio_sequence_iterator iterator;
+
+    rc = seqio_create_sequence_iterator("bad path",
+                                        SEQIO_DEFAULT_SEQUENCE_OPTIONS,
+                                        &iterator);
+    assert(rc == SEQIO_ERR_FILE_NOT_FOUND);
+                                          
+    rc = seqio_create_sequence_iterator("input/a.fa",
+                                        SEQIO_DEFAULT_SEQUENCE_OPTIONS,
+                                        nullptr);
+    assert(rc == SEQIO_ERR_INVALID_PARAMETER);
+}
 
 int main(int argc, const char **argv) {
+    test_return_err_handler();
+
     test_fasta_transform_caps_gatcn();
 
     test_pna_write();

@@ -33,11 +33,11 @@ int open_count(char const *path) {
     return fd_counter;
 }
 
-char *create_random_bases(uint32_t len) {
+char *create_random_bases(uint32_t len, int seed) {
     char *seq = (char *)malloc(len + 1);
     char bases[] = {'A','T','G','C'};
     
-    std::default_random_engine generator;
+    std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> dist(0, 3);
 
     for(uint32_t i = 0; i < len; i++) {
@@ -48,10 +48,7 @@ char *create_random_bases(uint32_t len) {
     return seq;
 }
 
-void write_file(char const *path,
-                char const *name,
-                char const *comment,
-                char const *bases) {
+void write_file(char const *path, vector<seqspec_t> seqs) {
     seqio_writer writer;
     seqio_create_writer(path,
                         SEQIO_DEFAULT_WRITER_OPTIONS,
@@ -59,11 +56,14 @@ void write_file(char const *path,
 
     seqio_dictionary metadata;
     seqio_create_dictionary(&metadata);
-    seqio_set_value(metadata, SEQIO_KEY_NAME, name);
-    seqio_set_value(metadata, SEQIO_KEY_COMMENT, comment);
 
-    seqio_create_sequence(writer, metadata);
-    seqio_write(writer, bases, strlen(bases));
+    for(seqspec_t spec: seqs) {
+        seqio_set_value(metadata, SEQIO_KEY_NAME, spec.name);
+        seqio_set_value(metadata, SEQIO_KEY_COMMENT, spec.comment);
+
+        seqio_create_sequence(writer, metadata);
+        seqio_write(writer, spec.bases, strlen(spec.bases));
+    }
 
     seqio_dispose_writer(&writer);
 }

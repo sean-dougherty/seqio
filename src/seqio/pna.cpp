@@ -160,8 +160,10 @@ FilePointerGuard FilePointerPool::acquire() {
     lock.clear(std::memory_order_release);               // release lock
 
     if(f == nullptr) {
-        errif(nullptr == (f = fopen(path.c_str(), "r")),
-              "Failed opening %s", path.c_str());
+        f = fopen(path.c_str(), "r");
+        if(f == nullptr) {
+            raise_io("Failed opening %s", path.c_str());
+        }
     }
 
     return FilePointerGuard(this, f);
@@ -188,10 +190,10 @@ PnaSequenceReader::PnaSequenceReader(FilePointerGuard fguard_,
     fguard.manage(&fpna);
 
     seqfragments.begin = new seqfragment_t[sequence.seqfragments_count];
-    errif(0 != fseeko(fpna, sequence.seqfragments_filepos, SEEK_SET),
-          "Failed seeking to seqfragments");
-    errif(1 != fread(seqfragments.begin, sizeof(seqfragment_t) * sequence.seqfragments_count, 1, fpna),
-          "Failed reading seqfragments");
+    if(0 != fseeko(fpna, sequence.seqfragments_filepos, SEEK_SET))
+        raise_io("Failed seeking to seqfragments");
+    if(1 != fread(seqfragments.begin, sizeof(seqfragment_t) * sequence.seqfragments_count, 1, fpna))
+        raise_io("Failed reading seqfragments");
     seqfragments.next = sequence.seqfragments_count > 0 ? &seqfragments.begin[0] : nullptr;
     seqfragments.end = &seqfragments.begin[sequence.seqfragments_count];
 
@@ -212,8 +214,8 @@ PnaSequenceReader::PnaSequenceReader(FilePointerGuard fguard_,
         }
     }
 
-    errif(0 != fseeko(fpna, sequence.packed_bases_filepos, SEEK_SET),
-          "Failed seeking to bases");
+    if(0 != fseeko(fpna, sequence.packed_bases_filepos, SEEK_SET))
+        raise_io("Failed seeking to bases");
 }
 
 PnaSequenceReader::~PnaSequenceReader() {
@@ -230,17 +232,17 @@ uint64_t PnaSequenceReader::size() {
     return sequence.bases_count;
 }
 
-#define NEXT_BYTE()                                                        \
-    if(packedCache.index == packedCache.len) {                                \
-        errif((packedCache.bases_offset+packedCache.len) >= sequence.packed_bases_length, \
-              "Attempting to read base byte when none remain!");        \
-        packedCache.bases_offset += packedCache.len;                        \
-        packedCache.len = min(uint64_t(READBUF_CAPACITY),                \
+#define NEXT_BYTE()                                                     \
+    if(packedCache.index == packedCache.len) {                          \
+        if((packedCache.bases_offset+packedCache.len) >= sequence.packed_bases_length) \
+            raise_io("Attempting to read base byte when none remain!"); \
+        packedCache.bases_offset += packedCache.len;                    \
+        packedCache.len = min(uint64_t(READBUF_CAPACITY),               \
                               sequence.packed_bases_length - packedCache.bases_offset); \
-        errif(1 != fread(packedCache.buf, packedCache.len, 1, fpna),        \
-              "Failed filling read buffer.");                                \
-        packedCache.index = 0;                                                \
-    }                                                                        \
+        if(1 != fread(packedCache.buf, packedCache.len, 1, fpna))       \
+            raise_io("Failed filling read buffer.");                    \
+        packedCache.index = 0;                                          \
+    }                                                                   \
     packedCache.curr = packedCache.buf[packedCache.index++];
 
 seqfragment_t *PnaSequenceReader::find_next_seqfragment(uint64_t offset) {
@@ -295,8 +297,8 @@ void PnaSequenceReader::seek(uint64_t seekOffset) {
 
 
         uint64_t packed_bases_filepos = sequence.packed_bases_filepos + packed_bases_offset;
-        errif(0 != fseeko(fpna, packed_bases_filepos, SEEK_SET),
-              "Failed seeking to %lu.", packed_bases_filepos);
+        if(0 != fseeko(fpna, packed_bases_filepos, SEEK_SET))
+            raise_io("Failed seeking to %lu.", packed_bases_filepos);
 
         RESET_CACHE(packed_bases_offset);
 
@@ -423,7 +425,8 @@ const PnaMetadata PnaSequenceReader::getMetadata() {
 }
 
 PnaSequenceReader::packed_read_result_t PnaSequenceReader::packed_read(uint8_t *packed_buf, uint64_t buflen) {
-    errif(buflen < sequence.packed_bases_length, "Buffer too small.");
+    if(buflen < sequence.packed_bases_length)
+        raise_parm("Buffer too small.");
 
     packed_read_result_t result;
 
@@ -439,10 +442,10 @@ PnaSequenceReader::packed_read_result_t PnaSequenceReader::packed_read(uint8_t *
             (last->packed_bases_offset * 4) + (last->shift / 2) + last->bases_count;
     }
 
-    errif(0 != fseeko(fpna, sequence.packed_bases_filepos, SEEK_SET),
-          "Failed seeking to bases");
-    errif(1 != fread(packed_buf, sequence.packed_bases_length, 1, fpna),
-          "Failed reading packed bases");
+    if(0 != fseeko(fpna, sequence.packed_bases_filepos, SEEK_SET))
+        raise_io("Failed seeking to bases");
+    if(1 != fread(packed_buf, sequence.packed_bases_length, 1, fpna))
+        raise_io("Failed reading packed bases");
 
     return result;
 }
@@ -461,10 +464,10 @@ PnaReader::PnaReader(const char *path_)
     //
     // Read header
     //
-    errif(0 != fseeko(f, 0, SEEK_SET),
-          "Failed seeking to header of %s.", path.c_str());
-    errif(1 != fread(&header, sizeof(header), 1, f),
-          "Failed reading header of %s.", path.c_str());
+    if(0 != fseeko(f, 0, SEEK_SET))
+        raise_io("Failed seeking to header of %s.", path.c_str());
+    if(1 != fread(&header, sizeof(header), 1, f))
+        raise_io("Failed reading header of %s.", path.c_str());
 
     if(header.signature != PNA_FILE_SIGNATURE) {
         raise_io("PNA file signature not found.");
@@ -478,10 +481,12 @@ PnaReader::PnaReader(const char *path_)
     //
     {
         int fd = fileno(f);
-        errif(fd < 0, "Failed getting fd");
+        if(fd < 0)
+            raise_io("Failed getting fd");
 
         long page_size = sysconf(_SC_PAGE_SIZE);
-        errif(page_size < 1, "Failed determining system page size.");
+        if(page_size < 1)
+            raise_io("Failed determining system page size.");
 
         uint64_t offset = header.string_storage.filepos;
         uint64_t end = header.sequences_filepos + (header.sequences_count * sizeof(sequence_t));
@@ -494,7 +499,8 @@ PnaReader::PnaReader(const char *path_)
                            MAP_SHARED,
                            fd,
                            offset);
-        errif(mmap.addr == (void *)-1, "Failed mmap'ing strings");
+        if(mmap.addr == (void *)-1)
+            raise_io("Failed mmap'ing strings");
         mmap.file_start = (uint8_t *)mmap.addr - offset;
 
         strings = (const char *)mmap.file_start + header.string_storage.filepos;
@@ -508,7 +514,8 @@ PnaReader::PnaReader(const char *path_)
 
 PnaReader::~PnaReader() {
     if(mmap.addr) {
-        errif(0 != munmap(mmap.addr, mmap.length), "Failed munmap'ing");
+        if(0 != munmap(mmap.addr, mmap.length))
+            raise_io("Failed munmap'ing");
     }
 }
 
@@ -529,8 +536,8 @@ const PnaMetadata PnaReader::getMetadata() {
 }
 
 const PnaMetadata PnaReader::getSequenceMetadata(uint64_t index) {
-    errif(index >= header.sequences_count,
-          "Index out of bounds");
+    if(index >= header.sequences_count)
+        raise_parm("Index out of bounds");
 
     return PnaMetadata(sequences[index].metadata,
                        mmap.file_start,
@@ -538,8 +545,8 @@ const PnaMetadata PnaReader::getSequenceMetadata(uint64_t index) {
 }
 
 shared_ptr<PnaSequenceReader> PnaReader::openSequence(uint64_t index, uint32_t flags) {
-    errif(index >= header.sequences_count,
-          "Index out of bounds");
+    if(index >= header.sequences_count)
+        raise_parm("Index out of bounds");
 
     const sequence_t &sequence = sequences[index];
     // make_shared is causing internal compiler error (gcc 4.7.3)
@@ -552,8 +559,8 @@ shared_ptr<PnaSequenceReader> PnaReader::openSequence(uint64_t index, uint32_t f
 
 uint32_t StringStorageWriter::getOffset(stringid_t id) {
     OffsetMap::iterator it = offsets.find(id);
-    errif(it == offsets.end(),
-          "String id not found!");
+    if(it == offsets.end())
+        raise_parm("String id not found!");
 
     return it->second;
 }
@@ -579,17 +586,17 @@ void StringStorageWriter::write(FILE *f, string_storage_t &header) {
         stringid_t id = idpair.second;
         uint32_t len = str.length() + 1;
 
-        errif((uint64_t(offset) + len) > MAX_STRING_STORAGE,
-              "String storage capacity exceeded.");
+        if((uint64_t(offset) + len) > MAX_STRING_STORAGE)
+            raise_oom("String storage capacity exceeded.");
 
-        errif(1 != fwrite(str.c_str(), len, 1, f),
-              "Failed writing string storage");
+        if(1 != fwrite(str.c_str(), len, 1, f))
+            raise_io("Failed writing string storage");
         offsets[id] = offset;
         offset += len;
     }
 
-    errif((ftello(f) - header.filepos) != offset,
-          "Ended at invalid location in building string storage");
+    if((ftello(f) - header.filepos) != offset)
+        raise_io("Ended at invalid location in building string storage");
 
     header.length = offset;
 }
@@ -631,8 +638,8 @@ void MetadataWriter::write(FILE *f) {
 
         sort(entries, entries + nentries, local::comp);
 
-        errif(1 != fwrite(entries, sizeof(entries), 1, f),
-              "Failed writing metadata entries");
+        if(1 != fwrite(entries, sizeof(entries), 1, f))
+            raise_io("Failed writing metadata entries");
     }
 }
 
@@ -664,7 +671,8 @@ PnaSequenceWriter::~PnaSequenceWriter() {
 }
 
 void PnaSequenceWriter::write(char const *buf, uint64_t buflen) {
-    errif(!fpna, "Sequence closed.");
+    if(!fpna)
+        raise_state("Sequence closed.");
 
     for(uint64_t bufOffset = 0; bufOffset < buflen; bufOffset++, seqOffset++) {
         base_t base = base_map[(uint8_t)buf[bufOffset]];
@@ -707,18 +715,21 @@ void PnaSequenceWriter::write(char const *buf, uint64_t buflen) {
 }
 
 void PnaSequenceWriter::addMetadata(const char *key, const char *value) {
-    errif(!fpna, "Sequence closed.");
+    if(!fpna)
+        raise_state("Sequence closed.");
 
     metadata.addMetadata(key, value);
 }
 
 uint64_t PnaSequenceWriter::getBasePairCount() {
-    errif(!fpna, "Sequence closed");
+    if(!fpna)
+        raise_state("Sequence closed.");
     return seqOffset;
 }
 
 uint64_t PnaSequenceWriter::getByteCount() {
-    errif(!fpna, "Sequence closed");
+    if(!fpna)
+        raise_state("Sequence closed.");
     return
         sizeof(sequence_t)
         + sizeof(seqfragment_t) * seqfragments.size()
@@ -746,8 +757,8 @@ void PnaSequenceWriter::close() {
     sequence.seqfragments_count = seqfragments.size();
 
     for(seqfragment_t seqfragment: seqfragments) {
-        errif(1 != fwrite(&seqfragment, sizeof(seqfragment_t), 1, fpna),
-              "Failed writing seqfragment");
+        if(1 != fwrite(&seqfragment, sizeof(seqfragment_t), 1, fpna))
+            raise_io("Failed writing seqfragment");
     }
 
     fpna = nullptr;
@@ -762,8 +773,8 @@ void PnaSequenceWriter::addPackedByte() {
 
 void PnaSequenceWriter::flushCache() {
     if(packedCache.len) {
-        errif(1 != fwrite(packedCache.buf, packedCache.len, 1, fpna),
-              "Failed writing packed cache!!!\n");
+        if(1 != fwrite(packedCache.buf, packedCache.len, 1, fpna))
+            raise_io("Failed writing packed cache!!!\n");
         packedCache.len = 0;
     }
 }
@@ -777,8 +788,8 @@ PnaWriter::PnaWriter(const char *path) // todo: const string &
     header.signature = PNA_FILE_SIGNATURE;
     header.version = PNA_VERSION;
 
-    errif(0 != fseeko(f, sizeof(header), SEEK_SET),
-          "Failed seeking past header");
+    if(0 != fseeko(f, sizeof(header), SEEK_SET))
+        raise_io("Failed seeking past header");
     header.sequences_filepos = ftello(f);
 }
 
@@ -808,7 +819,8 @@ void PnaWriter::closeSequence() {
 }
 
 void PnaWriter::addMetadata(const char *key, const char *value) {
-    errif(!f, "File closed!");
+    if(!f)
+        raise_state("File closed!");
 
     metadata.addMetadata(key, value);
 }
@@ -842,8 +854,8 @@ void PnaWriter::close() {
     header.sequences_count = sequences.size();
 
     for(auto sequence: sequences) {
-        errif(1 != fwrite(sequence, sizeof(sequence_t), 1, f),
-              "Failed writing sequence");
+        if(1 != fwrite(sequence, sizeof(sequence_t), 1, f))
+            raise_io("Failed writing sequence");
         header.max_seqfragments_count = max(header.max_seqfragments_count,
                                             sequence->seqfragments_count);
         header.max_packed_bases_length = max(header.max_packed_bases_length,
@@ -855,10 +867,10 @@ void PnaWriter::close() {
     //
     // Write header
     //
-    errif(0 != fseeko(f, 0, SEEK_SET),
-          "Failed seeking to header");
-    errif(1 != fwrite(&header, sizeof(header), 1, f),
-          "Failed writing header");
+    if(0 != fseeko(f, 0, SEEK_SET))
+        raise_io("Failed seeking to header");
+    if(1 != fwrite(&header, sizeof(header), 1, f))
+        raise_io("Failed writing header");
 
     //
     // Done
