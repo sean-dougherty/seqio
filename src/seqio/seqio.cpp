@@ -26,10 +26,12 @@ seqio_writer_options const SEQIO_DEFAULT_WRITER_OPTIONS = {
 };
 
 static seqio_status  __err_abort(seqio_err_info err_info);
+static seqio_status  __err_exit(seqio_err_info err_info);
 static seqio_status __err_return(seqio_err_info err_info);
 seqio_err_handler const SEQIO_ERR_HANDLER_ABORT = &__err_abort;
+seqio_err_handler const SEQIO_ERR_HANDLER_EXIT = &__err_exit;
 seqio_err_handler const SEQIO_ERR_HANDLER_RETURN = &__err_return;
-static seqio_err_handler err_handler = SEQIO_ERR_HANDLER_ABORT;
+static seqio_err_handler err_handler = SEQIO_ERR_HANDLER_EXIT;
 
 #define INITIAL_READ_ALL_BUFFER_LENGTH (16 * 1024)
 
@@ -470,6 +472,13 @@ static seqio_status __err_abort(seqio_err_info err_info) {
             (int)err_info.status,
             err_info.message);
     abort();
+}
+
+static seqio_status __err_exit(seqio_err_info err_info) {
+    fprintf(stderr, "seqio error: status=%d, message=%s\n",
+            (int)err_info.status,
+            err_info.message);
+    exit(err_info.status);
 }
 
 static seqio_status __err_return(seqio_err_info err_info) {

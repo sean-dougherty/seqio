@@ -134,6 +134,7 @@ extern seqio_sequence_options const SEQIO_DEFAULT_SEQUENCE_OPTIONS;
 extern seqio_writer_options const SEQIO_DEFAULT_WRITER_OPTIONS;
 
 extern seqio_err_handler const SEQIO_ERR_HANDLER_ABORT;
+extern seqio_err_handler const SEQIO_ERR_HANDLER_EXIT;
 extern seqio_err_handler const SEQIO_ERR_HANDLER_RETURN;
 
 /*!

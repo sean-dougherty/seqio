@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#define SEQIO_ABORT_ON_EXCEPTION
+//#define SEQIO_ABORT_ON_EXCEPTION
 
 namespace seqio {
     namespace impl {
